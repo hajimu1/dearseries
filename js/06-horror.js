@@ -5,16 +5,28 @@ const canvas = $('scene');
 const ctx = canvas.getContext('2d');
 const W = canvas.width, H = canvas.height;
 const defaults = {
-  storyTitle: '', story: '', storySize: 22,
+  mysteryName: '미스터리', mysteryDescription: '', storyTitle: '', story: '', storySize: 22,
   buttonText: '이 미스터리를 조사한다', characterName: '',
   logs: '(중요한 메시지는 이곳에 표시됩니다)\n[13:31:20]: 새로운 주문을 배웠다: 미다스의 손길!\n[13:31:20]: 새로운 상태를 얻었다: 도망자',
-  animation: 'still', blink: true, duration: 6, gifWidth: 1338
+  animation: 'still', blink: true, duration: 12, gifWidth: 1448,
+  infoTitle: '피부 박리', infoKind: '흡수', infoLevel: '1', infoCount: '0',
+  infoBody: '', ritual: '활성화된 의식 없음'
 };
 const config = {...defaults};
 const stats = Object.fromEntries(['stamina', 'reason', 'STR', 'DEX', 'PER', 'KNW', 'CHR', 'FND'].map(key => [key, '']));
-const imageAreas = {scene: {x: 588, y: 44, w: 430, h: 412}, portrait: {x: 1024, y: 436, w: 312, h: 191}};
+const imageAreas = {scene: {x: 657, y: 65, w: 410, h: 604}, portrait: {x: 1083, y: 638, w: 357, h: 280}, selection: {x: 26, y: 212, w: 1033, h: 565}};
 const pictures = Object.fromEntries(Object.keys(imageAreas).map(key => [key, {image: null, rendered: null, zoom: 1, x: .5, y: .5}]));
-let frame, dark = '#061011', light = '#3c7885', palette;
+const emptyPicture = () => ({image:null, rendered:null, zoom:1, x:.5, y:.5});
+const newPage = () => ({title:'', story:'', picture:emptyPicture()});
+const cards = [{x:287,y:365,w:85,h:119},{x:786,y:345,w:90,h:125},{x:518,y:426,w:108,h:70},{x:368,y:505,w:81,h:125},{x:550,y:548,w:89,h:128},{x:716,y:512,w:100,h:126}];
+const mysteryIndex = 2;
+let editorPage = 0, hoverCard = -1, hoverNext = false, hoverAction = '';
+let nextClickUntil = 0;
+const nextButton = {x:574, y:720, w:44, h:48};
+const actionButtons = {back:{x:29,y:813,w:147,h:53}, investigate:{x:654,y:726,w:397,h:122,inset:0}};
+let pages = [newPage(), newPage()];
+pictures.scene = pages[0].picture;
+let frame, selectionFrame, dark = '#000000', light = '#ffffff', palette;
 let ready = false, playing = false, busy = false, cancelled = false, time = 0, lastTick = 0;
 
 function notify(message, error = false) {
@@ -60,15 +72,15 @@ function fitLine(text, width) {
   return chars.join('') + '…';
 }
 
-function drawStory(t) {
+function drawStory(t, page) {
   const size = config.storySize, lineHeight = size + 6;
   font(size, light, 'center');
-  const title = config.storyTitle ? wrapText(config.storyTitle, 480) : [];
-  const body = config.story ? wrapText(config.story, 480) : [];
+  const title = page.title ? wrapText(page.title, 480) : [];
+  const body = page.story ? wrapText(page.story, 480) : [];
   const gap = title.length && body.length ? lineHeight : 0;
   const height = (title.length + body.length) * lineHeight + gap;
   let y = Math.max(188, 337 - height / 2);
-  let remaining = config.animation === 'typewriter' ? Math.floor(t / (config.duration * .65) * Array.from(config.storyTitle + config.story).length) : Infinity;
+  let remaining = config.animation === 'typewriter' ? Math.floor(t / (config.duration * .5 / pages.length * .65) * Array.from(page.title + page.story).length) : Infinity;
   ctx.save(); ctx.beginPath(); ctx.rect(40, 176, 502, 304); ctx.clip();
   for (const [index, lines] of [title, body].entries()) {
     if (index) y += gap;
@@ -83,55 +95,206 @@ function drawStory(t) {
   ctx.restore();
 }
 
-function drawPortrait() {
-  const area = imageAreas.portrait, hasImage = !!pictures.portrait.rendered;
-  ctx.fillStyle = light;
-  ctx.fillRect(1023, 435, 315, 194);
-  if (hasImage) ctx.drawImage(pictures.portrait.rendered, area.x, area.y, area.w, area.h);
-  ctx.strokeStyle = dark; ctx.lineWidth = 2;
-  ctx.strokeRect(1024, 436, 312, 191);
-  // Keep the stats legible on both bright and dark uploaded portraits.
-  if (hasImage) {
-    ctx.globalAlpha = .9; ctx.fillStyle = dark;
-    ctx.fillRect(1025, 438, 85, 120); ctx.fillRect(1250, 438, 85, 120);
-    ctx.globalAlpha = 1;
-  }
-  const ink = hasImage ? light : dark;
-  font(28, ink); ctx.fillText(stats.stamina, 1030, 440);
-  font(28, ink, 'right'); ctx.fillText(stats.reason, 1330, 440);
-  font(18, ink); ctx.fillText('체력', 1030, 469);
-  font(18, ink, 'right'); ctx.fillText('이성', 1330, 469);
-  ctx.fillStyle = ink; ctx.fillRect(1028, 489, 76, 2); ctx.fillRect(1255, 489, 77, 2);
-  ['STR', 'DEX', 'PER'].forEach((key, i) => {font(18, ink); ctx.fillText(`${key}:${stats[key]}`, 1030, 495 + i * 20);});
-  ['KNW', 'CHR', 'FND'].forEach((key, i) => {font(18, ink, 'right'); ctx.fillText(`${stats[key]}:${key}`, 1330, 495 + i * 20);});
-}
-
 function draw(t = time) {
   if (!ready) return;
-  ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(frame, 0, 0, W, H);
-  const area = imageAreas.scene;
-  if (pictures.scene.rendered) ctx.drawImage(pictures.scene.rendered, area.x, area.y, area.w, area.h);
-  drawStory(t);
-  ctx.fillStyle = dark; ctx.fillRect(1095, 43, 238, 30);
-  font(22, light, 'center'); ctx.fillText(fitLine(config.characterName, 228), 1214, 48);
-  drawPortrait();
-  ctx.fillStyle = light; ctx.fillRect(588, 505, 408, 66);
-  font(24, dark, 'center');
-  const buttonLabel = fitLine(config.buttonText, 394);
-  ctx.fillText(buttonLabel, 792, 526); ctx.fillText(buttonLabel, 793, 526);
-  ctx.fillStyle = dark; ctx.fillRect(2, 612, 1017, 100);
-  font(22, light, 'center');
-  const logs = config.logs.split('\n').slice(0, 3);
-  logs.forEach((line, i) => {
-    const text = fitLine(line, 970), y = 632 + i * 25;
-    ctx.fillText(text, 510, y);
-    if (i === logs.length - 1) ctx.fillText(text, 511, y);
-  });
-  if (config.blink && t % 1 >= .6) {
-    ctx.fillStyle = light; ctx.fillRect(519, 499, 23, 21);
-  }
+  savePage();
+  drawSequence(t);
 }
+
+function savePage() {
+  Object.assign(pages[editorPage], {title:config.storyTitle, story:config.story, picture:pictures.scene});
+}
+
+function selectPage(index, preview = true) {
+  editorPage = index;
+  config.storyTitle = pages[index].title; config.story = pages[index].story;
+  pictures.scene = pages[index].picture;
+  $('pageSelect').replaceChildren(...pages.map((_,i)=>new Option(`${i+1} 페이지`,i,false,i===index)));
+  $('removePage').disabled = pages.length === 1;
+  $('sceneUpload').value = '';
+  $('sceneFileName').textContent = pictures.scene.image ? `${index+1} 페이지 이미지` : '이미지 선택';
+  document.querySelector('[data-tools="scene"]').hidden = !pictures.scene.image;
+  document.querySelectorAll('[data-image="scene"]').forEach(input=>{input.value=pictures.scene[input.dataset.property];});
+  if (preview) {playing=false; time=config.duration*(.3 + .5*(index+.45)/pages.length);}
+  syncForm(); draw();
+}
+
+function pageAt(t) {
+  return Math.max(0,Math.min(pages.length-1,Math.floor((t/config.duration-.3)/(.5/pages.length))));
+}
+
+function sequenceStage(t) {
+  const phase = t / config.duration;
+  return phase < .3 || phase >= .92 ? 'selection' : 'detail';
+}
+
+function drawSequence(t) {
+  const detail = sequenceStage(t) === 'detail';
+  $('hotspots').hidden = !detail;
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(detail ? frame : selectionFrame, 0, 0, W, H);
+  ctx.drawImage(selectionFrame, 0, 0, W, 60, 0, 0, W, 60);
+  if (!detail && pictures.selection.rendered) {
+    const a = imageAreas.selection; ctx.drawImage(pictures.selection.rendered, a.x, a.y, a.w, a.h);
+  }
+  const pageIndex = pageAt(t), page = pages[pageIndex];
+  if (detail) {
+    const a = imageAreas.scene;
+    if (page.picture.rendered) ctx.drawImage(page.picture.rendered, a.x, a.y, a.w, a.h);
+    ctx.save(); ctx.translate(0, 20); ctx.scale(1.12, 1.48);
+    drawStory(Math.max(0, t - config.duration * (.3 + .5*pageIndex/pages.length)),page); ctx.restore();
+    ctx.fillStyle = light; ctx.fillRect(1078, 65, 283, 38); ctx.fillRect(1078, 111, 283, 32);
+    font(28, dark, 'center'); ctx.fillText(fitLine(config.infoTitle, 275), 1218, 70);
+    ctx.fillText(fitLine(config.infoKind, 275), 1218, 111);
+    ctx.fillStyle = light; ctx.fillRect(1370, 66, 69, 34); ctx.fillRect(1370, 111, 69, 32);
+    font(26, dark, 'right'); ctx.fillText(config.infoLevel, 1436, 72); ctx.fillText(config.infoCount, 1436, 114);
+    ctx.fillStyle = light; ctx.fillRect(1079, 151, 280, 160);
+    font(21, dark); wrapText(config.infoBody, 264).slice(0, 6).forEach((line, i) => ctx.fillText(line, 1086, 158 + i * 24));
+    ctx.fillStyle = light; ctx.fillRect(1074, 318, 374, 1);
+    ctx.fillStyle = dark; ctx.fillRect(1074, 319, 374, 101);
+    ctx.drawImage(frame, 1074, 319, 374, 31, 1074, 325, 374, 31);
+    ctx.fillStyle = light; ctx.fillRect(1075, 357, 372, 62);
+    font(23, dark); ctx.fillText(fitLine(config.ritual, 350), 1083, 366);
+  }
+  const a = imageAreas.portrait;
+  ctx.fillStyle = light; ctx.fillRect(a.x, a.y, a.w, a.h);
+  if (pictures.portrait.rendered) ctx.drawImage(pictures.portrait.rendered, a.x, a.y, a.w, a.h);
+  const ink = pictures.portrait.rendered ? light : dark;
+  function portraitText(text, x, y) {
+    if (pictures.portrait.rendered) {
+      ctx.save(); ctx.strokeStyle = dark; ctx.lineWidth = 3; ctx.lineJoin = 'round';
+      ctx.strokeText(text, x, y); ctx.restore();
+    }
+    ctx.fillText(text, x, y);
+  }
+  font(27, ink); portraitText(`체력 ${stats.stamina}`, 1090, 682);
+  font(27, ink, 'right'); portraitText(`${stats.reason} 이성`, 1434, 682);
+  ['STR', 'DEX', 'PER'].forEach((key, i) => {font(25, ink); portraitText(`${key}:${stats[key]}`, 1090, 722 + i * 30);});
+  ['KNW', 'CHR', 'FND'].forEach((key, i) => {font(25, ink, 'right'); portraitText(`${stats[key]}:${key}`, 1434, 722 + i * 30);});
+  if (config.characterName) {font(23, ink, 'center'); portraitText(fitLine(config.characterName, 330), 1261, 861);}
+  if (detail) {
+    ctx.fillStyle = light; ctx.fillRect(654, 726, 397, 122);
+    font(32, dark, 'center'); ctx.fillText(fitLine(config.buttonText, 382), 852, 774);
+    ctx.fillStyle = light; ctx.fillRect(25, 809, 155, 61);
+    ctx.strokeStyle = dark; ctx.lineWidth = 3; ctx.strokeRect(29, 813, 147, 53);
+    font(24, dark, 'center'); ctx.fillText('← 뒤로가기', 102, 827);
+    drawNextButton();
+    const clickedAt = config.duration * (.3 + .5 * pageIndex / pages.length);
+    if ((pageIndex > 0 && t >= clickedAt && t-clickedAt < .12) || (!playing && !busy && performance.now()<nextClickUntil)) drawNextDots();
+    font(18, light, 'right'); ctx.fillText(`${pageIndex+1} / ${pages.length}`,564,742);
+  }
+  ctx.fillStyle = dark; ctx.fillRect(2, 909, 1067, 175);
+  if (detail) {
+    font(28, light, 'center'); config.logs.split('\n').slice(0, 3).forEach((line, i) => ctx.fillText(fitLine(line, 1040), 534, 928 + i * 38));
+  }
+  if (!detail && hoverCard >= 0 && !playing && !busy) drawCardHover(hoverCard);
+  if (detail && hoverAction && !playing && !busy) drawButtonTone(actionButtons[hoverAction]);
+  drawPlaybackPointer(t);
+  canvas.dataset.stage = detail ? 'detail' : 'selection';
+  canvas.dataset.page = String(pageIndex+1);
+}
+
+function drawNextButton() {
+  const b = nextButton;
+  ctx.fillStyle = dark; ctx.fillRect(b.x-1,b.y-1,b.w+2,b.h+2);
+  ctx.fillStyle = light; ctx.fillRect(b.x,b.y,b.w,b.h);
+  ctx.fillStyle = dark; ctx.fillRect(b.x+2,b.y+2,b.w-4,b.h-4);
+  ctx.fillStyle = light; ctx.fillRect(b.x+4,b.y+4,b.w-8,b.h-8);
+  ctx.fillStyle = dark;
+  ctx.beginPath();ctx.moveTo(b.x+12,b.y+12);ctx.lineTo(b.x+12,b.y+b.h-12);ctx.lineTo(b.x+b.w-10,b.y+b.h/2);ctx.closePath();ctx.fill();
+}
+
+function drawNextDots() {
+  drawButtonTone(nextButton);
+}
+
+function drawButtonTone(b) {
+  const inset=b.inset ?? 4;
+  ctx.save();ctx.globalCompositeOperation='difference';ctx.fillStyle=light;
+  for(let y=b.y+inset;y<b.y+b.h-inset;y+=4) {
+    for(let x=b.x+inset;x<b.x+b.w-inset;x+=4) ctx.fillRect(x,y,Math.min(2,b.x+b.w-inset-x),Math.min(2,b.y+b.h-inset-y));
+  }
+  ctx.restore();
+}
+
+function drawCardHover(index) {
+  const c = cards[index];
+  ctx.fillStyle = dark;
+  for (let y=c.y+4;y<c.y+c.h-4;y+=2) {
+    for (let x=c.x+4;x<c.x+c.w-4;x+=2) ctx.fillRect(x,y,1,1);
+  }
+  ctx.fillStyle = dark; ctx.fillRect(641,786,418,91);
+  ctx.strokeStyle = light; ctx.lineWidth = 2; ctx.strokeRect(645,790,410,83);
+  const title=index === mysteryIndex ? config.mysteryName : '? ? ?';
+  font(19,light,'center'); ctx.fillText(fitLine(title,395),850,794);
+  ctx.fillStyle = light; ctx.fillRect(649,817,402,52);
+  font(22,dark,'center');
+  const lines=wrapText(index === mysteryIndex ? config.mysteryDescription : '아직 확인되지 않은 미스터리',382).slice(0,2);
+  lines.forEach((line,i)=>ctx.fillText(fitLine(line,382),850,820+(2-lines.length)*11+i*23));
+}
+
+function drawPlaybackPointer(t) {
+  const phase=t/config.duration;
+  const center=i=>({x:cards[i].x+cards[i].w*.55,y:cards[i].y+cards[i].h*.55});
+  const stops=[{at:0,x:490,y:680},{at:.04,...center(3)},{at:.10,...center(3)},
+    {at:.14,...center(5)},{at:.20,...center(5)},{at:.24,...center(mysteryIndex)},{at:.30,...center(mysteryIndex)}];
+  stops.push({at:.3+Math.min(.035,.25/pages.length),x:593,y:749},{at:.80,x:593,y:749});
+  stops.push({at:.83,x:848,y:785},{at:.85,x:848,y:785},
+    {at:.87,x:736,y:761},{at:.89,x:102,y:841},{at:.92,x:102,y:841},{at:1,x:490,y:680});
+  let from=stops[0],to=stops[stops.length-1];
+  for(let i=1;i<stops.length;i++)if(phase<=stops[i].at){from=stops[i-1];to=stops[i];break;}
+  const mix=Math.max(0,Math.min(1,(phase-from.at)/(to.at-from.at||1)));
+  const x=Math.round((from.x+(to.x-from.x)*mix)/2)*2,y=Math.round((from.y+(to.y-from.y)*mix)/2)*2;
+  if(sequenceStage(t)==='selection') {
+    const index=cards.findIndex(b=>x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h);
+    if(index>=0&&!(hoverCard>=0&&!playing&&!busy))drawCardHover(index);
+  } else {
+    for(const [name,b] of Object.entries(actionButtons)) {
+      if(x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h&&!(hoverAction===name&&!playing&&!busy))drawButtonTone(b);
+    }
+  }
+  ctx.save();ctx.translate(x,y);ctx.fillStyle=light;ctx.strokeStyle=dark;ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,24);ctx.lineTo(6,18);ctx.lineTo(11,29);
+  ctx.lineTo(16,27);ctx.lineTo(11,16);ctx.lineTo(20,16);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();
+}
+
+function navigateScene(back) {
+  if(busy||!ready)return;
+  savePage();if(!back){selectPage(0);return;}
+  playing=false;hoverCard=-1;
+  time=config.duration*(back ? .96 : .3+.225/pages.length);syncTime();draw();
+}
+function canvasPoint(event) {
+  const b=canvas.getBoundingClientRect();return {x:(event.clientX-b.left)*W/b.width,y:(event.clientY-b.top)*H/b.height};
+}
+canvas.addEventListener('mousemove',event=>{
+  if(busy||playing)return;
+  const {x,y}=canvasPoint(event);
+  hoverCard=sequenceStage(time)==='selection'?cards.findIndex(c=>x>=c.x&&x<=c.x+c.w&&y>=c.y&&y<=c.y+c.h):-1;
+  const b=nextButton;
+  hoverNext=sequenceStage(time)==='detail'&&pageAt(time)<pages.length-1&&x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h;
+  hoverAction=sequenceStage(time)==='detail'?(Object.keys(actionButtons).find(key=>{const a=actionButtons[key];return x>=a.x&&x<=a.x+a.w&&y>=a.y&&y<=a.y+a.h;})||''):'';
+  canvas.style.cursor=hoverCard>=0||hoverNext||hoverAction?'pointer':'default';draw();
+});
+canvas.addEventListener('mouseleave',()=>{hoverCard=-1;hoverNext=false;hoverAction='';if(!busy&&!playing)draw();});
+canvas.addEventListener('click',event=>{
+  if(busy||!ready)return;
+  const {x,y}=canvasPoint(event),detail=sequenceStage(time)==='detail';
+  if(detail&&x>=25&&x<=180&&y>=809&&y<=870)navigateScene(true);
+  else if(detail&&x>=nextButton.x&&x<=nextButton.x+nextButton.w&&y>=nextButton.y&&y<=nextButton.y+nextButton.h&&pageAt(time)<pages.length-1){savePage();nextClickUntil=performance.now()+120;selectPage(pageAt(time)+1);setTimeout(()=>{if(!playing&&!busy)draw();},130);}
+  else if(!detail){const index=cards.findIndex(c=>x>=c.x&&x<=c.x+c.w&&y>=c.y&&y<=c.y+c.h);if(index===mysteryIndex)navigateScene(false);}
+});
+$('back').onclick=()=>navigateScene(true);
+$('openDetail').onclick=()=>navigateScene(false);
+$('pageSelect').onchange=()=>{savePage();selectPage(Number($('pageSelect').value));};
+$('addPage').onclick=()=>{
+  savePage();pages.push(newPage());config.duration=Math.max(config.duration,Math.ceil(6+pages.length*3));selectPage(pages.length-1);
+};
+$('removePage').onclick=()=>{
+  if(pages.length===1)return;
+  if(!confirm('이 페이지의 본문과 이미지를 삭제할까요?'))return;
+  pages.splice(editorPage,1);selectPage(Math.min(editorPage,pages.length-1));
+};
 
 function renderPicture(key) {
   const picture = pictures[key];
@@ -178,6 +341,7 @@ $('settings').addEventListener('input', event => {
   const input = event.target;
   if (input.dataset.config) {
     config[input.dataset.config] = input.type === 'checkbox' ? input.checked : input.hasAttribute('data-number') ? Number(input.value) : input.value;
+    if(input.dataset.config==='duration') config.duration=Math.max(6,Math.min(120,config.duration || 12));
     time = Math.min(time, config.duration); $('storySizeValue').value = `${config.storySize} px`;
   } else if (input.dataset.stat) {
     const value = input.value === '' ? '' : String(Math.max(0, Math.min(99, Math.round(Number(input.value) || 0))));
@@ -226,9 +390,16 @@ $('regionsToggle').onclick = () => {
   $('regionsToggle').setAttribute('aria-pressed', String(shown));
 };
 document.querySelectorAll('[data-section]').forEach(button => button.addEventListener('click', () => {
+  if (busy) return;
+  playing=false;lastTick=0;
+  if (button.dataset.section==='storySection' || button.dataset.section==='imageSection') {
+    savePage();selectPage(pageAt(time),false);
+  }
+  syncTime();
   const section = $(button.dataset.section); section.open = true;
-  section.scrollIntoView({behavior: 'auto', block: 'nearest'});
-  $(button.dataset.focus).focus({preventScroll: true});
+  const input = $(button.dataset.focus);
+  input.scrollIntoView({behavior: 'auto', block: 'nearest'});
+  input.focus({preventScroll: true});
 }));
 $('fullscreen').onclick = async () => {
   try {if (document.fullscreenElement) await document.exitFullscreen(); else await $('previewShell').requestFullscreen();}
@@ -239,13 +410,15 @@ $('scrub').oninput = () => {playing = false; time = Number($('scrub').value); sy
 $('reset').onclick = () => {
   if (!confirm('문구, 이미지, 스탯을 처음 상태로 되돌릴까요?')) return;
   Object.assign(config, defaults); Object.keys(stats).forEach(key => {stats[key] = '';});
+  editorPage=0;pages=[newPage(),newPage()];pictures.scene=pages[0].picture;
+  selectPage(0,false);
   Object.keys(pictures).forEach(clearPicture); playing = false; time = 0; syncForm(); draw(); notify('처음 상태로 되돌렸어요.');
 };
 
 function lock(value) {
   busy = value;
   $('settingsFields').disabled = value;
-  ['png', 'gif', 'video', 'play', 'scrub', 'reset'].forEach(id => {$(id).disabled = value;});
+  ['png', 'gif', 'video', 'play', 'scrub', 'reset', 'back', 'openDetail'].forEach(id => {$(id).disabled = value;});
   document.querySelectorAll('[data-section]').forEach(button => {button.disabled = value;});
 }
 
@@ -273,7 +446,7 @@ $('png').onclick = () => exportScene(async () => {
   const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
   if (!blob) throw new Error('PNG 저장에 실패했어요. 다시 시도해주세요.');
   if (cancelled) throw new Error('저장을 취소했어요.');
-  download(blob, 'world-of-horror.png'); notify('PNG 저장 완료 · 1338 × 714');
+  download(blob, 'world-of-horror.png'); notify(`PNG 저장 완료 · ${W} × ${H}`);
 });
 
 $('gif').onclick = () => exportScene(async () => {
@@ -351,14 +524,14 @@ function tick(stamp) {
 }
 
 (async () => {
-  lock(true); syncForm();
+  selectPage(0,false);lock(true); syncForm();
   try {
     const assets = window.HorrorAssets;
-    [frame] = await Promise.all([loadImage(assets.frame), document.fonts.load('22px Pixel', '한글 ABC')]);
+    [frame, selectionFrame] = await Promise.all([loadImage(assets.frame), loadImage(assets.selection), document.fonts.load('22px Pixel', '한글 ABC')]);
     await document.fonts.ready;
     ctx.drawImage(frame, 0, 0);
-    const darkPixel = Array.from(ctx.getImageData(700, 200, 1, 1).data).slice(0, 3);
-    const lightPixel = Array.from(ctx.getImageData(600, 470, 1, 1).data).slice(0, 3);
+    const darkPixel = [0, 0, 0];
+    const lightPixel = [255, 255, 255];
     palette = [darkPixel, lightPixel]; dark = `rgb(${darkPixel.join(',')})`; light = `rgb(${lightPixel.join(',')})`;
     ready = true; draw(); $('scene').dataset.ready = 'true';
     notify('준비됐어요. 장면을 클릭하거나 오른쪽 패널에서 편집하세요.');
