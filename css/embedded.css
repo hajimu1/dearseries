@@ -1,0 +1,1 @@
+body>header .brand{display:none}body>header{justify-content:flex-end}body>.app-header{height:42px}body>.app-header .offline{display:none}.workspace .inspector{height:calc(100vh - 42px)}@media(max-width:780px){.workspace .inspector{height:auto}}

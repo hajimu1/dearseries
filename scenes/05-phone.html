@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>메신저 콜라주 편집기</title>
+<link rel="stylesheet" href="../css/05-phone.css">
+<!-- Pretendard: Copyright (c) 2021, Kil Hyung-jin (https://github.com/orioncactus/pretendard),
+with Reserved Font Name 'Pretendard'.
+
+Copyright 2014-2021 Adobe (http://www.adobe.com/),
+with Reserved Font Name 'Source'.
+Source is a trademark of Adobe in the United States and/or other countries.
+
+Copyright (c) 2016 The Inter Project Authors (https://github.com/rsms/inter),
+with Reserved Font Name 'Inter'.
+
+Copyright 2021 The M+ FONTS Project Authors (https://github.com/coz-m/MPLUS_FONTS),
+with Reserved Font Name 'M PLUS 1'.
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+https://scripts.sil.org/OFL
+
+
+—————————————————————————————-
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+—————————————————————————————-
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded, 
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to, deleting,
+or substituting — in part or in whole — any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+"Author" refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+PERMISSION & CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,
+in Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or
+in the appropriate machine-readable metadata fields within text or
+binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the corresponding
+Copyright Holder. This restriction only applies to the primary font name as
+presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole,
+must be distributed entirely under this license, and must not be
+distributed under any other license. The requirement for fonts to
+remain under this license does not apply to any document created
+using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.
+
+Phosphor Icons: MIT License
+
+Copyright (c) 2023 Phosphor Icons
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+ -->
+<link rel="stylesheet" href="../css/05-phone-editor.css"><link rel="stylesheet" href="../css/embedded.css"></head>
+<body>
+<header><div class="brand"><div class="mark" aria-hidden="true">✧</div><div><strong>Dear Scene.</strong><small>PROFILE · MUSIC · MESSAGES</small></div></div><div class="actions"><button id="savePng">PNG 저장</button><button id="saveGif" class="primary">GIF 저장</button><button id="saveVideo">영상 저장 ↗</button></div></header>
+<div class="shell">
+<aside><div class="eyebrow">SETTINGS</div><h1>설정</h1><p class="intro">이미지·프로필·대화·메모를 설정합니다.</p>
+<form id="editor" autocomplete="off">
+<label class="field">배경<select id="backgroundMode"><option value="photo">배경 이미지</option><option value="solid">단색 배경</option></select></label><label class="field" for="backgroundColor">배경 색</label><div class="background-actions"><input id="backgroundColor" type="color" aria-label="배경 색"><button id="phoneBackgroundUpload" type="button">배경 이미지 선택</button></div><label class="field">바꿀 이미지<select id="imageSlot"><option value="phone">핸드폰 이미지</option><option value="background">배경 이미지</option><option value="album">노래 이미지</option><option value="profile">상대 프로필 사진</option><option value="selfProfile">내 프로필 사진</option></select></label><img id="imagePreview" class="image-preview" alt="선택한 원본 이미지"><label class="field">이미지 업로드 · JPG / PNG / WEBP / GIF<input id="imageUpload" type="file" accept="image/png,image/jpeg,image/webp,image/gif" data-asset="phone"></label><div class="pair"><label class="field">가로 위치<input id="imageCropX" type="range" min="0" max="1" step="0.01"></label><label class="field">세로 위치<input id="imageCropY" type="range" min="0" max="1" step="0.01"></label></div><label class="field">확대<input id="imageZoom" type="range" min="1" max="3" step="0.05"></label><p class="hint">이미지마다 위치와 확대 설정을 별도로 저장합니다.</p><div hidden><img id="thumb-phone" alt=""><img id="thumb-background" alt=""><img id="thumb-album" alt=""><img id="thumb-profile" alt=""><img id="thumb-selfProfile" alt=""></div>
+<details open><summary>노래 설정 <span class="number">02</span></summary><label class="field">곡명<input id="song" maxlength="100"></label><label class="field">아티스트<input id="artist" maxlength="100"></label><div class="pair"><label class="field">현재 시간 (초)<input id="elapsed" type="number" min="0" max="35999"></label><label class="field">전체 길이 (초)<input id="songDuration" type="number" min="1" max="36000"></label></div><label class="check"><input id="musicPlaying" type="checkbox">재생 중으로 표시</label><p class="hint">애플뮤직 스타일의 음악 카드입니다. 실제 음원은 재생되지 않아요.</p></details>
+<details open><summary>프로필 & 대화 <span class="number">03</span></summary><label class="check"><input id="showNote" type="checkbox">메모 카드 표시</label><label class="field">메모 위아래 위치<input id="noteY" type="range" min="24" max="608" step="1"></label><label class="field">메모 제목<input id="noteTitle" maxlength="70"></label><label class="field">메모 날짜 · 선택<input id="noteDate" maxlength="40"></label><label class="field">메모 내용<textarea id="caption" maxlength="160"></textarea></label><div class="pair"><label class="field">상대 이름<input id="contact" maxlength="36"></label><label class="field">프로필 설명<input id="contactSub" maxlength="50"></label></div><label class="field">받은 메시지<textarea id="incoming" maxlength="160"></textarea></label><label class="field">보낸 메시지<textarea id="outgoing" maxlength="160"></textarea></label><p class="hint">프로필은 노래 이미지와 별도로 설정할 수 있어요.</p></details>
+<details><summary>화면 & 연출</summary><label class="field">반복 길이<select id="duration"><option value="5">5초 · 원본 속도</option><option value="8">8초 · 천천히</option><option value="10">10초 · 더 천천히</option></select></label><label class="field"><span class="range-label">배경 농도 <output id="opacityValue">88%</output></span><input id="backgroundOpacity" type="range" min="0.1" max="1" step="0.01"></label><label class="field">핸드폰 이미지 연출<select id="phoneMotion"><option value="static">고정</option><option value="leftRight">왼쪽 → 오른쪽</option><option value="rightLeft">오른쪽 → 왼쪽</option><option value="upDown">위 → 아래</option><option value="downUp">아래 → 위</option><option value="zoomIn">천천히 확대</option><option value="zoomOut">천천히 축소</option></select></label><div class="pair"></div><label class="check"><input id="sparkles" type="checkbox">은은한 별빛</label><label class="field"><span class="range-label">반짝임 강도 <output id="sparkleValue">45%</output></span><input id="sparkleStrength" type="range" min="0" max="1" step="0.01"></label><label class="field"><span class="range-label">글자 폭 <output id="fontWidthValue">100%</output></span><input id="fontWidth" type="range" min="0.85" max="1.05" step="0.01"></label><label class="field"><span class="range-label">자간 <output id="letterSpacingValue">0px</output></span><input id="letterSpacing" type="range" min="-1" max="1" step="0.05"></label><label class="field">GIF 크기<select id="gifWidth"><option value="640">640 × 444 · 작은 파일</option><option value="960">960 × 666 · 균형</option><option value="1280">1280 × 888 · 원본 크기</option></select></label><label class="check"><input id="loop" type="checkbox">반복 재생</label></details>
+<button class="reset" id="reset" type="button">테스트 이미지와 기본 설정으로 돌아가기</button></form></aside>
+<main><div class="workspace-head"><div><div class="eyebrow" style="margin-bottom:6px">LIVE PREVIEW</div><h2>메신저 콜라주 미리보기</h2></div><span class="status-pill" id="previewStatus">반복 재생 중</span></div><div class="stage"><canvas id="scene" width="1280" height="888" role="img" aria-label="아이폰, 음악 카드와 메시지가 차례로 나타나는 콜라주 미리보기"></canvas><div class="stage-foot"><span>1280 × 888 · 원본 비율</span><span>프로필 · 대화 · 음악 카드 · 메모</span></div></div><div class="transport"><div class="transport-row"><button id="play" class="play" aria-label="일시정지">Ⅱ</button><button id="restart" aria-label="처음부터 재생">↺</button><input id="scrub" type="range" min="0" max="5" step="0.01" value="0" aria-label="장면 시간"><span class="clock"><span id="time">0.00</span> / <span id="totalTime">5.00</span>s</span></div><div class="steps"><span data-at="0">배경</span><span data-at="0.08">연락처</span><span data-at="0.14">음악</span><span data-at="0.38">받은 메시지</span><span data-at="0.74">답장</span></div><progress id="recordProgress" max="1" value="0" aria-label="영상 저장 진행률"></progress></div><p class="bottom-note">시간 막대를 움직여 원하는 순간을 PNG로 저장하세요.</p><div class="notice" id="notice" role="status" aria-live="polite"></div></main>
+</div>
+<script src="../js/gif-codec.js"></script><script src="../js/gif-review.js"></script>
+<script src="../js/05-phone-icons.js"></script>
+<script src="../js/05-phone-assets.js"></script>
+<script src="../js/05-phone.js"></script>
+<script src="../js/05-phone-images.js"></script><script src="../js/05-phone-tabs.js"></script><script src="../js/vhs.js"></script><script src="../js/05-phone-enhancements.js"></script><script src="../js/frame-host.js"></script></body>
+</html>
+

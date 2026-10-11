@@ -1,0 +1,60 @@
+:root{--paper:#edf3f1;--surface:#fff;--ink:#24262b;--muted:#747781;--line:#d9dce3;--mint:#4c8779}
+body{background:#edf3f1;color:#24262b}
+header{background:linear-gradient(#fff,#f4f5f8);border-bottom:1px solid #c9ced7}
+.brand .mark{background:linear-gradient(#93b9ab,#4c8779);color:white;border-radius:10px;box-shadow:inset 0 1px #ffffff80}
+.brand strong{font-family:inherit;font-size:21px;letter-spacing:-.6px;font-weight:600}
+.brand small{color:#858993;letter-spacing:.8px}
+button{border-color:#ced4dd;border-radius:8px;background:linear-gradient(#fff,#f0f3f8);color:#487d70;box-shadow:0 1px 2px #263a5210}
+button:hover{background:#e8f2ed}button.primary,.play{background:linear-gradient(#7da99b,#487d70);border-color:#487d70;color:#fff}button.primary:hover{background:#36695e}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-visible{outline-color:#91b8a9}
+.shell{grid-template-columns:326px minmax(0,1fr)}
+aside{background:#e5eeeb;padding:20px 16px;border-color:#ced4dd;scrollbar-color:#bac6d6 #e5eeeb}
+aside .eyebrow{color:#748397;font-size:10px;letter-spacing:1.2px}
+aside h1{font-size:23px;letter-spacing:-.7px;font-weight:600;color:#232d3b}
+aside .intro{font-size:12px;color:#758295;margin-bottom:24px}
+.section-title{padding:0 10px;color:#69798d;font-size:12px;font-weight:400}
+.upload{border:1px solid #d5dce6;background:white;border-radius:10px;min-height:72px;padding:11px;margin-bottom:7px;box-shadow:0 1px 2px #23415d06}
+.upload:hover{background:#f7faff}.upload:focus-within{outline-color:#91b8a9}.upload img{border-radius:9px;border:1px solid #e0e5ed}.upload strong{font-size:12px;color:#293748}.upload small{line-height:1.4;color:#7d8999}.plus{font-size:23px;font-weight:400;color:#4c8779}
+details{background:#fff;border:1px solid #d4dce6;border-radius:12px;padding:15px 13px 4px;margin-top:18px;box-shadow:0 1px 2px #243a5110}
+summary{color:#27445f;font-size:13px;align-items:center;min-height:22px}summary:after{color:#4c8779;font-size:18px;font-weight:400}
+.number{font-size:10px;color:#9ca7b5;margin-left:auto;margin-right:9px}
+.field{font-size:11px;font-weight:400;color:#53657a;margin:15px 0}
+.field input:not([type=checkbox]):not([type=range]),.field textarea,.field select{background:#f5f7fa;color:#253b51;border:1px solid #dce3ec;border-radius:7px;padding:10px;font-size:12px}
+.field input[type=range]{height:22px;accent-color:#4c8779}
+.check{border-top:1px solid #edf0f5;padding-top:13px;color:#465b73;font-size:12px}.check input{appearance:none;width:34px;height:20px;border-radius:12px;background:#c8cfd9;position:relative;flex:none;margin:0}.check input:before{content:'';position:absolute;width:16px;height:16px;left:2px;top:2px;border-radius:50%;background:#fff;box-shadow:0 1px 2px #0003}.check input:checked{background:#34b76a}.check input:checked:before{left:16px}.check input:disabled{opacity:.45}
+.hint{color:#7b8798;font-size:10px;line-height:1.7}.reset{color:#d24c54;background:#fff;border-color:#d4dce6}
+main{background:#edf3f1}.workspace-head h2{color:#30465e}.stage{border-color:#d3dce6;box-shadow:0 8px 28px #253e5710}.status-pill{background:#e7f0ea;border-color:#c0d3c8;color:#4b7a69}.transport{border-color:#d4dce6;background:#ffffffd9}.steps .active{color:#4c8779}.notice{color:#286cae}.notice.error{color:#a53e49}.bottom-note,.clock{color:#78889a}
+@media(max-width:1000px){.shell{grid-template-columns:290px minmax(0,1fr)}aside{padding:18px 13px}}
+@media(max-width:740px){.shell{display:flex}.actions{grid-template-columns:repeat(2,1fr)}aside{padding:22px 16px}.brand strong{font-size:21px}header{padding:14px 16px}.pair{gap:10px}}
+[hidden]{display:none!important}
+aside{display:flex;flex-direction:column;overflow:hidden}
+aside>.eyebrow,aside>h1,aside>.intro{flex:none}aside>.intro{margin-bottom:14px}
+#phoneSettingsTabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;padding:4px;background:#dce7e2;border:1px solid #becfc6;border-radius:10px;flex:none;margin-bottom:12px}
+#phoneSettingsTabs button{padding:9px 1px;min-height:36px;min-width:0;font-size:11px;border:0;border-radius:7px;background:transparent;color:#52677f;box-shadow:none}
+#phoneSettingsTabs button[aria-selected=true]{background:#fff;color:#487d70;box-shadow:0 1px 4px #2d456629}
+#editor{overflow-y:auto;min-height:0;flex:1;overscroll-behavior:contain;scrollbar-gutter:stable;padding-right:3px}
+#editor>[data-phone-panel]{margin-top:0}#editor>details[data-phone-panel]>summary{display:none}
+#editor>#phone-settings-panel-0>.section-title{margin-top:5px}#editor>#phone-settings-panel-0 .number{display:none}
+@media(max-width:740px){aside{max-height:none}#editor{max-height:65dvh;flex:initial}#phoneSettingsTabs button{min-height:40px}}
+
+/* Messenger window and contact card. */
+header{background:linear-gradient(#fbfdfb,#e2ede7);border-color:#b9cfc3}.brand .mark{border-radius:12px 12px 12px 3px;background:#729f8d;font-size:18px}.brand strong{color:#3c5b4e;font-weight:500}.brand small{color:#7c9588}
+aside{background:linear-gradient(#e6eeea,#f2f5ef);border-color:#bfd0c5}aside>.eyebrow,aside>h1,aside>.intro{display:none}
+.messenger-profile{display:flex;align-items:center;gap:12px;flex:none;padding:16px 13px;margin-bottom:16px;border:1px solid #becfc3;border-radius:17px;background:linear-gradient(120deg,#e7f2eb,#f8edf1);box-shadow:inset 0 1px #fff,0 3px 8px #4764500a}
+.messenger-profile img{width:54px;height:54px;object-fit:cover;border-radius:50%;border:3px solid #fff;box-shadow:0 1px 4px #52715e30}.messenger-profile strong{display:block;font-size:15px;font-weight:550;color:#39584b;overflow-wrap:anywhere}.messenger-profile small{display:block;margin-top:6px;font-size:10px;color:#6d897a}.messenger-profile small:before{content:'●';font-size:8px;color:#71a27e;margin-right:5px}
+#phoneSettingsTabs{background:#dbe6df;border-color:#bcd0c0;border-radius:12px}#phoneSettingsTabs button{color:#6c8778}#phoneSettingsTabs button[aria-selected=true]{background:#fffdf8;color:#3e725f;border-radius:9px 9px 9px 3px}
+details{border-color:#c8d7cd;background:#ffffffbb;border-radius:15px}.upload{background:#ffffffc9;border-color:#ccdcd0;border-radius:13px}.upload img{border-radius:12px}.plus{color:#709480}.upload strong{color:#496153}.upload small{color:#829388}
+.field{color:#617c6b}.field input:not([type=checkbox]):not([type=range]),.field textarea,.field select{background:#fafcf9;border-color:#d4dfd4;color:#3b5546}.hint{color:#819487}
+#incoming{background:#edf2e8;border-color:#d4dfca;border-radius:13px 13px 13px 3px;padding:13px;min-height:80px}
+#outgoing{background:#f7e6ed;border-color:#e9cbd7;border-radius:13px 13px 3px 13px;padding:13px;min-height:80px}
+#caption{background:#fffdf4;border-color:#e2d8b6;border-radius:9px;min-height:96px}
+#phone-settings-panel-2 .upload{background:linear-gradient(110deg,#edf5ef,#f7edf0)}#phone-settings-panel-2 .upload img{border-radius:50%}
+main{background:linear-gradient(135deg,#e5eeea,#f4f1ed)}.workspace-head h2{color:#4b6757}.stage{border-color:#cad8ce;border-radius:17px}.transport{background:#fcfdfacc;border-color:#c5d6ca;border-radius:16px}.steps .active{color:#527f69}.notice{color:#567f69}.notice.error{color:#a53e49}button{color:#4c7964;border-color:#c6d7ca;background:linear-gradient(#fffefa,#ecf2eb)}button:hover{background:#e5eee5}.reset{color:#a26c7d}
+.image-preview{display:block;width:100%;height:138px;object-fit:cover;border:1px solid #bdcfc1;border-radius:7px;background:#dce6df;margin:10px 0 16px}
+#imageUpload{display:block;width:100%;font-size:10px;margin-top:8px;color:#698472}#imageUpload::file-selector-button{padding:9px 10px;border:1px solid #c0d1c5;border-radius:6px;background:#fffdf8;color:#54745f;margin-right:6px;font:inherit}
+#phone-settings-panel-0>.pair{gap:12px}#phone-settings-panel-0 .field{margin-top:15px}
+
+
+.background-actions{display:grid;grid-template-columns:68px minmax(0,1fr);gap:8px;align-items:center;width:100%;margin:6px 0 14px}
+body .background-actions>input[type=color]{display:block;width:100%;height:40px;margin:0;padding:4px;box-sizing:border-box;background:#fff;border:1px solid #9eacb5;border-radius:4px}
+body .background-actions>button{width:100%;height:40px;min-height:40px;margin:0;padding:7px 8px;box-sizing:border-box;font-size:11px;white-space:nowrap}

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>World of Horror — Dear Series</title>
+<link rel="stylesheet" href="../css/06-horror.css"><link rel="stylesheet" href="../css/embedded.css">
+<!-- Font and GIF licenses: ../licenses/ -->
+</head>
+<body>
+<header class="app-header">
+  <a class="brand" href="#" aria-label="Dear Series"><span class="brand-mark" aria-hidden="true">d.</span>DEAR SERIES<span class="brand-divider"></span><span class="edition">SCENE 06</span></a>
+  <div class="header-right"><span class="offline"><i></i> 오프라인 편집기</span><button id="reset" class="quiet" type="button">초기화</button></div>
+</header>
+<main class="workspace">
+  <section class="studio" aria-labelledby="sceneTitle">
+    <div class="scene-heading"><div><p class="eyebrow">1-BIT MYSTERY / 1984</p><h1 id="sceneTitle">WORLD OF HORROR<span>월드 오브 호러</span></h1></div><span class="scene-badge">오마주</span></div>
+    <div class="preview-toolbar"><span><i class="live-dot"></i> 장면 미리보기</span><div><button id="regionsToggle" aria-pressed="false" class="quiet" type="button">편집 영역</button><button id="fullscreen" class="quiet" type="button" aria-label="장면 전체 화면">⛶ <span>전체 화면</span></button></div></div>
+    <div class="preview-shell" id="previewShell">
+      <div class="scene-wrap" id="sceneWrap">
+        <canvas id="scene" width="1338" height="714" role="img" aria-label="월드 오브 호러 장면. 왼쪽 본문, 중앙 이미지, 오른쪽 지도와 인물 스탯, 하단 메시지."></canvas>
+        <div class="hotspots" id="hotspots" aria-label="장면에서 편집할 영역 선택">
+          <button type="button" data-section="storySection" data-focus="story" style="--x:1.8%;--y:22%;--w:40%;--h:52%" aria-label="왼쪽 본문 편집"><span>01 본문</span></button>
+          <button type="button" data-section="imageSection" data-focus="sceneUpload" style="--x:44%;--y:6%;--w:32%;--h:58%" aria-label="중앙 이미지 편집"><span>02 장면 이미지</span></button>
+          <button type="button" data-section="characterSection" data-focus="characterName" style="--x:81.5%;--y:6%;--w:18%;--h:4.5%" aria-label="우측 이름 편집"><span>03 이름</span></button>
+          <button type="button" data-section="characterSection" data-focus="portraitUpload" style="--x:76.5%;--y:61%;--w:23.3%;--h:27%" aria-label="우측 하단 이미지와 스탯 편집"><span>04 인물 · 스탯</span></button>
+          <button type="button" data-section="logSection" data-focus="logs" style="--x:1%;--y:87%;--w:74%;--h:12%" aria-label="하단 메시지 편집"><span>05 메시지</span></button>
+        </div>
+      </div>
+    </div>
+    <div class="transport">
+      <button id="play" class="play-button" type="button" aria-label="재생">▶</button>
+      <span class="time"><output id="currentTime">00:00</output><span>/</span><span id="totalTime">00:06</span></span>
+      <input id="scrub" type="range" min="0" max="6" step="0.01" value="0" aria-label="재생 위치">
+      <span class="loop-label">↻ 반복</span>
+    </div>
+    <div class="preview-caption"><span>1338 × 714 <span class="caption-dot">·</span> 원본 비율</span><span>장면을 클릭해 해당 영역을 편집하세요.</span></div>
+    <div class="export-bar"><div><span class="export-title">장면 저장</span><span class="export-note">편집 패널 없이 장면만 저장됩니다.</span></div><div class="export-buttons"><button type="button" id="png">PNG <span>↓</span></button><button type="button" id="gif">GIF <span>↓</span></button><button type="button" id="video" class="primary">영상 <span>↓</span></button></div></div>
+    <div class="status-row"><p id="notice" role="status" aria-live="polite">준비 중…</p><button id="cancel" class="quiet" type="button" hidden>저장 취소</button></div>
+    <progress id="progress" max="1" value="0" hidden aria-label="저장 진행률"></progress>
+    <p class="session-note">업로드한 이미지와 수정 내용은 이 창에서만 유지됩니다.</p>
+  </section>
+  <aside class="inspector" aria-labelledby="inspectorTitle">
+    <div class="inspector-heading"><div><p class="eyebrow">SCENE SETTINGS</p><h2 id="inspectorTitle">장면 편집</h2></div><span class="settings-count">05 AREAS</span></div>
+    <form id="settings" autocomplete="off"><fieldset id="settingsFields"><legend class="sr-only">장면 설정</legend>
+      <details id="storySection" open><summary><span class="section-number">01</span>본문<span class="chevron">⌄</span></summary><div class="section-content">
+        <label for="storyTitle">제목</label><input id="storyTitle" type="text" maxlength="70" placeholder="미스터리의 제목을 입력하세요" data-config="storyTitle">
+        <label for="story">내용</label><textarea id="story" rows="5" maxlength="700" placeholder="이곳에 적은 문장이&#10;왼쪽 창에 표시됩니다." data-config="story"></textarea>
+        <div class="field-row"><label for="storySize">글자 크기</label><output id="storySizeValue">22 px</output></div><input id="storySize" type="range" min="16" max="30" step="2" value="22" data-config="storySize" data-number>
+        <label for="buttonText">버튼 문구</label><input id="buttonText" type="text" maxlength="35" value="이 미스터리를 조사한다" data-config="buttonText">
+      </div></details>
+      <details id="imageSection" open><summary><span class="section-number">02</span>장면 이미지<span class="chevron">⌄</span></summary><div class="section-content">
+        <label class="upload-box" for="sceneUpload"><span class="upload-icon" aria-hidden="true">＋</span><strong id="sceneFileName">이미지 선택</strong><small>PNG · JPG · WEBP</small><input id="sceneUpload" type="file" accept="image/png,image/jpeg,image/webp" data-upload="scene"></label>
+        <div class="image-tools" data-tools="scene" hidden><div class="field-row"><label for="sceneZoom">확대</label><button type="button" class="text-button" data-remove="scene">이미지 지우기</button></div><input id="sceneZoom" type="range" min="1" max="3" step="0.05" value="1" data-image="scene" data-property="zoom" aria-label="장면 이미지 확대"><div class="crop-grid"><label>가로 위치<input type="range" min="0" max="1" step="0.01" value="0.5" data-image="scene" data-property="x" aria-label="장면 이미지 가로 위치"></label><label>세로 위치<input type="range" min="0" max="1" step="0.01" value="0.5" data-image="scene" data-property="y" aria-label="장면 이미지 세로 위치"></label></div></div>
+        <p class="field-hint">원본에 맞춰 두 가지 색의 픽셀 이미지로 표시됩니다.</p>
+      </div></details>
+      <details id="characterSection"><summary><span class="section-number">03</span>인물 · 스탯<span class="chevron">⌄</span></summary><div class="section-content">
+        <label for="characterName">이름 / 상태</label><input id="characterName" type="text" maxlength="24" placeholder="예: 도망자" data-config="characterName">
+        <label class="upload-box compact" for="portraitUpload"><span class="upload-icon" aria-hidden="true">＋</span><strong id="portraitFileName">인물 이미지 선택</strong><small>우측 하단 사각형에 채워집니다.</small><input id="portraitUpload" type="file" accept="image/png,image/jpeg,image/webp" data-upload="portrait"></label>
+        <div class="image-tools" data-tools="portrait" hidden><div class="field-row"><label for="portraitZoom">확대</label><button type="button" class="text-button" data-remove="portrait">이미지 지우기</button></div><input id="portraitZoom" type="range" min="1" max="3" step="0.05" value="1" data-image="portrait" data-property="zoom" aria-label="인물 이미지 확대"><div class="crop-grid"><label>가로 위치<input type="range" min="0" max="1" step="0.01" value="0.5" data-image="portrait" data-property="x" aria-label="인물 이미지 가로 위치"></label><label>세로 위치<input type="range" min="0" max="1" step="0.01" value="0.5" data-image="portrait" data-property="y" aria-label="인물 이미지 세로 위치"></label></div></div>
+        <p class="field-hint">스탯은 이미지 위에 겹쳐 표시됩니다.</p>
+        <div class="stat-grid vital"><label>체력<input type="number" min="0" max="99" step="1" placeholder="—" data-stat="stamina"></label><label>이성<input type="number" min="0" max="99" step="1" placeholder="—" data-stat="reason"></label></div>
+        <div class="stat-grid"><label>STR <span>힘</span><input type="number" min="0" max="99" step="1" placeholder="—" data-stat="STR"></label><label>KNW <span>지식</span><input type="number" min="0" max="99" step="1" placeholder="—" data-stat="KNW"></label><label>DEX <span>민첩</span><input type="number" min="0" max="99" step="1" placeholder="—" data-stat="DEX"></label><label>CHR <span>매력</span><input type="number" min="0" max="99" step="1" placeholder="—" data-stat="CHR"></label><label>PER <span>지각</span><input type="number" min="0" max="99" step="1" placeholder="—" data-stat="PER"></label><label>FND <span>자금</span><input type="number" min="0" max="99" step="1" placeholder="—" data-stat="FND"></label></div>
+      </div></details>
+      <details id="logSection"><summary><span class="section-number">04</span>하단 메시지<span class="chevron">⌄</span></summary><div class="section-content"><label for="logs">메시지 기록</label><textarea id="logs" rows="6" maxlength="400" data-config="logs"></textarea><p class="field-hint">최대 3줄. 마지막 줄이 굵게 표시됩니다.</p></div></details>
+      <details id="motionSection"><summary><span class="section-number">05</span>재생 · 저장<span class="chevron">⌄</span></summary><div class="section-content"><label for="animation">본문 연출</label><select id="animation" data-config="animation"><option value="still">정지 화면</option><option value="typewriter">한 글자씩 나타나기</option></select><label class="check-label"><input id="blink" type="checkbox" checked data-config="blink">다음 화살표 깜빡임</label><div class="two-fields"><label>재생 길이<select id="duration" data-config="duration" data-number><option value="3">3초</option><option value="6" selected>6초</option><option value="10">10초</option></select></label><label>GIF 가로 크기<select id="gifWidth" data-config="gifWidth" data-number><option value="669">669 px</option><option value="1000">1000 px</option><option value="1338" selected>1338 px</option></select></label></div><p class="field-hint">GIF는 저장 전에 실제 용량을 15 MB 기준과 비교합니다. 영상은 무음으로 저장됩니다.</p></div></details>
+    </fieldset></form>
+    <div class="inspector-footer"><span class="swatch"></span><span>ORIGINAL BLUE <span class="footer-slash">/</span> 1-BIT</span></div>
+  </aside>
+</main>
+<script src="../js/06-horror-assets.js"></script><script src="../js/gif-codec.js"></script><script src="../js/gif-review.js"></script><script src="../js/06-horror.js"></script><script src="../js/frame-host.js"></script></body>
+</html>
