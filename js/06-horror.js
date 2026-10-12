@@ -8,7 +8,7 @@ const defaults = {
   mysteryName: '미스터리', mysteryDescription: '', storyTitle: '', story: '', storySize: 22,
   buttonText: '이 미스터리를 조사한다', characterName: '',
   logs: '(중요한 메시지는 이곳에 표시됩니다)\n[13:31:20]: 새로운 주문을 배웠다: 미다스의 손길!\n[13:31:20]: 새로운 상태를 얻었다: 도망자',
-  animation: 'still', blink: true, duration: 12, gifWidth: 1448,
+  animation: 'still', blink: true, duration: 12, gifWidth: 1448, doom: 0, headerYear: 1984, headerMonth: 5, palettePreset:'mono', paletteInk:'#000000', palettePaper:'#ffffff', paletteAccent:'#ffffff', paletteUseAccent:false,
   infoLevel: '1', infoExperience: '0', infoBody: '', ritual: '활성화된 의식 없음'
 };
 const config = {...defaults};
@@ -17,8 +17,7 @@ let statuses = defaultStatuses();
 const stats = Object.fromEntries(['stamina', 'reason', 'STR', 'DEX', 'PER', 'KNW', 'CHR', 'FND'].map(key => [key, '']));
 const imageAreas = {scene: {x: 657, y: 65, w: 410, h: 604}, portrait: {x: 1170, y: 640, w: 184, h: 276}};
 const pictures = Object.fromEntries(Object.keys(imageAreas).map(key => [key, {image: null, rendered: null, zoom: 1, x: .5, y: .5, brightness: 0}]));
-const emptyPicture = () => ({image:null, rendered:null, zoom:1, x:.5, y:.5, brightness:0});
-const newPage = () => ({title:'', story:'', picture:emptyPicture()});
+const newPage = () => ({title:'', story:''});
 const cards = [{x:287,y:365,w:85,h:119},{x:786,y:345,w:90,h:125},{x:518,y:426,w:108,h:70},{x:368,y:505,w:81,h:125},{x:550,y:548,w:89,h:128},{x:716,y:512,w:100,h:126}];
 const mysteryIndex = 2;
 let editorPage = 0, hoverCard = -1, hoverNext = false, hoverAction = '';
@@ -27,7 +26,6 @@ let navigation = null, manualPointer = null;
 const nextButton = {x:574, y:720, w:44, h:48};
 const actionButtons = {back:{x:36,y:813,w:147,h:53}, investigate:{x:654,y:726,w:397,h:122,inset:0}};
 let pages = [newPage(), newPage(), newPage()];
-pictures.scene = pages[0].picture;
 let frame, selectionFrame, portraitFrame, portraitClip, dark = '#000000', light = '#ffffff', palette;
 let ready = false, playing = false, busy = false, cancelled = false, time = 0, lastTick = 0;
 
@@ -74,7 +72,7 @@ function fitLine(text, width) {
   return chars.join('') + '…';
 }
 
-function drawStory(t, page) {
+function drawStory(t, page, index) {
   const size = config.storySize, lineHeight = size + 6;
   font(size, light, 'center');
   const title = page.title ? wrapText(page.title, 480) : [];
@@ -82,7 +80,7 @@ function drawStory(t, page) {
   const gap = title.length && body.length ? lineHeight : 0;
   const height = (title.length + body.length) * lineHeight + gap;
   let y = Math.max(188, 337 - height / 2);
-  let remaining = config.animation === 'typewriter' ? Math.floor(t / (config.duration * .375 / pages.length * .65) * Array.from(page.title + page.story).length) : Infinity;
+  let remaining = config.animation === 'typewriter' ? Math.floor(t / (config.duration * (pageStart(index+1)-pageStart(index)) * .65) * Array.from(page.title + page.story).length) : Infinity;
   ctx.save(); ctx.beginPath(); ctx.rect(40, 176, 502, 304); ctx.clip();
   for (const [index, lines] of [title, body].entries()) {
     if (index) y += gap;
@@ -101,28 +99,68 @@ function draw(t = time) {
   if (!ready) return;
   savePage();
   drawSequence(t);
+  applyScenePalette();
+}
+
+const scenePalettes={
+  mono:['#000000','#ffffff','#ffffff',false],
+  sepia:['#29291f','#eee0b5','#d4aa29',true],
+  blueprint:['#344359','#eee9d7','#96b5c6',true],
+  cyan:['#151820','#f1f1e7','#5cddd5',true],
+  crimson:['#211d29','#71a2a7','#b33356',true],
+  green:['#20382e','#c4d4a3','#82aa81',false]
+};
+let paletteCacheKey='',paletteLookup,paletteAccentLookup;
+function applyScenePalette() {
+  const {paletteInk:ink,palettePaper:paper,paletteAccent:accent,paletteUseAccent:useAccent}=config;
+  if(ink==='#000000' && paper==='#ffffff' && !useAccent)return;
+  const key=[ink,paper,accent].join();
+  if(key!==paletteCacheKey) {
+    const rgb=hex=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));
+    const low=rgb(ink);
+    const ramp=hex=>{const high=rgb(hex),out=new Uint8Array(256*3);for(let v=0;v<256;v++)for(let c=0;c<3;c++)out[v*3+c]=Math.round(low[c]+(high[c]-low[c])*v/255);return out;};
+    paletteLookup=ramp(paper);paletteAccentLookup=ramp(accent);paletteCacheKey=key;
+  }
+  const pixels=ctx.getImageData(0,0,W,H),data=pixels.data;
+  const regions=[imageAreas.scene,imageAreas.portrait,{x:655,y:2,w:210,h:52}];
+  const detail=canvas.dataset.stage==='detail';
+  if(!detail)regions[0]={x:2,y:60,w:1067,h:720};
+  for(let y=0;y<H;y++) {
+    const spans=useAccent?regions.filter(a=>y>=a.y&&y<a.y+a.h):[];
+    for(let x=0;x<W;x++) {
+      const i=(y*W+x)*4,v=data[i]*3;
+      const lut=spans.some(a=>x>=a.x&&x<a.x+a.w)?paletteAccentLookup:paletteLookup;
+      data[i]=lut[v];data[i+1]=lut[v+1];data[i+2]=lut[v+2];
+    }
+  }
+  ctx.putImageData(pixels,0,0);
 }
 
 function savePage() {
-  Object.assign(pages[editorPage], {title:config.storyTitle, story:config.story, picture:pictures.scene});
+  Object.assign(pages[editorPage], {title:config.storyTitle, story:config.story});
 }
 
 function selectPage(index, preview = true) {
   editorPage = index;
   config.storyTitle = pages[index].title; config.story = pages[index].story;
-  pictures.scene = pages[index].picture;
   $('pageSelect').replaceChildren(...pages.map((_,i)=>new Option(`${i+1} 페이지`,i,false,i===index)));
   $('removePage').disabled = pages.length === 1;
-  $('sceneUpload').value = '';
-  $('sceneFileName').textContent = pictures.scene.image ? `${index+1} 페이지 이미지` : '이미지 선택';
-  document.querySelector('[data-tools="scene"]').hidden = !pictures.scene.image;
-  document.querySelectorAll('[data-image="scene"]').forEach(input=>{input.value=pictures.scene[input.dataset.property];});
-  if (preview) {playing=false; time=config.duration*(.3 + .375*(index+.45)/pages.length);}
+  if (preview) {playing=false; time=config.duration*(pageStart(index)+(pageStart(index+1)-pageStart(index))*.45);}
   syncForm(); draw();
 }
 
+// Keep the first click after the pointer arrives, regardless of page count.
+function pageStart(index) {
+  if (index === 0) return .3;
+  if (index >= pages.length) return .675;
+  return .425 + .25 * (index-1) / (pages.length-1);
+}
+
 function pageAt(t) {
-  return Math.max(0,Math.min(pages.length-1,Math.floor((t/config.duration-.3)/(.375/pages.length))));
+  for (let index=pages.length-1; index>0; index--) {
+    if (t >= config.duration*pageStart(index)) return index;
+  }
+  return 0;
 }
 
 function sequenceStage(t) {
@@ -132,16 +170,24 @@ function sequenceStage(t) {
 
 function drawSequence(t) {
   const detail = sequenceStage(t) === 'detail';
-  $('hotspots').hidden = !detail;
+  $('hotspots').hidden = false;
+  $('hotspots').querySelectorAll('[data-focus]').forEach(button=>{button.style.visibility=detail || ['doom','headerYear'].includes(button.dataset.focus) ? '' : 'hidden';});
   ctx.imageSmoothingEnabled = false;
   ctx.drawImage(detail ? frame : selectionFrame, 0, 0, W, H);
   ctx.drawImage(selectionFrame, 0, 0, W, 60, 0, 0, W, 60);
+  ctx.save();ctx.fillStyle=dark;ctx.fillRect(57,4,210,52);
+  font(28,light);ctx.textBaseline='middle';ctx.fillText(`${config.headerMonth}월${config.headerYear}`,60,30);ctx.restore();
+  ctx.save();ctx.fillStyle=light;ctx.fillRect(868,22,47,31);
+  ctx.translate(891.5,37.5);ctx.scale(.86,1);
+  font(22,dark,'center');ctx.textBaseline='middle';ctx.fillText(`${config.doom}%`,0,0);ctx.restore();
   const pageIndex = pageAt(t), page = pages[pageIndex];
-  if (detail) {
+  if (detail && !window.HorrorEncounter) {
     const a = imageAreas.scene;
-    if (page.picture.rendered) ctx.drawImage(page.picture.rendered, a.x, a.y, a.w, a.h);
+    if (pictures.scene.rendered) ctx.drawImage(pictures.scene.rendered, a.x, a.y, a.w, a.h);
     ctx.save(); ctx.translate(0, 20); ctx.scale(1.12, 1.48);
-    drawStory(Math.max(0, t - config.duration * (.3 + .375*pageIndex/pages.length)),page); ctx.restore();
+    drawStory(Math.max(0, t - config.duration * pageStart(pageIndex)),page,pageIndex); ctx.restore();
+  }
+  if (detail) {
     const {step,bodyY,bodyHeight} = statusLayout();
     ctx.fillStyle = dark; ctx.fillRect(1074,62,292,254);
     statuses.forEach((status,i) => {
@@ -153,16 +199,18 @@ function drawSequence(t) {
       ctx.fillText(line,Math.round(1219.5+(metrics.actualBoundingBoxLeft-metrics.actualBoundingBoxRight)/2),Math.round(y+height/2+(metrics.actualBoundingBoxAscent-metrics.actualBoundingBoxDescent)/2));
     });
     ctx.fillStyle=light;ctx.fillRect(1370,66,69,34);ctx.fillRect(1370,111,69,32);
-    font(26,dark,'right');ctx.textBaseline='alphabetic';
     for(const [value,y,height] of [[config.infoLevel,66,34],[config.infoExperience,111,32]]) {
+      font(value.length>2 ? 20 : 26,dark,'right');ctx.textBaseline='alphabetic';
       const metrics=ctx.measureText(value);
       ctx.fillText(value,1436,Math.round(y+height/2+(metrics.actualBoundingBoxAscent-metrics.actualBoundingBoxDescent)/2));
     }
     font(11,dark); ctx.font='bold 11px Pixel, monospace'; ctx.textBaseline='bottom';
     ctx.fillText('LVL',1372,99); ctx.fillText('EXP',1372,142);
+    if (bodyHeight>8) {
     ctx.drawImage(frame,1074,147,292,169,1074,bodyY-3,292,bodyHeight+5);
     ctx.fillStyle=light; ctx.fillRect(1079,bodyY,280,bodyHeight-3);
     font(21,dark); wrapText(config.infoBody,264).slice(0,Math.min(6,Math.floor((bodyHeight-8)/24))).forEach((line,i)=>ctx.fillText(line,1086,bodyY+4+i*24));
+    }
     ctx.fillStyle = light; ctx.fillRect(1074, 318, 374, 1);
     ctx.fillStyle = dark; ctx.fillRect(1074, 319, 374, 101);
     ctx.drawImage(frame, 1074, 319, 374, 31, 1074, 325, 374, 31);
@@ -200,25 +248,26 @@ function drawSequence(t) {
   ['STR','DEX','PER'].forEach((key,i)=>{font(21,dark);ctx.fillText(`${key}:${stats[key]}`,1090,722+i*30);});
   ['KNW','CHR','FND'].forEach((key,i)=>{font(21,dark,'right');ctx.fillText(`${stats[key]}:${key}`,1434,722+i*30);});
   if (config.characterName) {font(18,dark);ctx.fillText(fitLine(config.characterName,78),1090,861);}
-  if (detail) {
+  if (detail && !window.HorrorEncounter) {
     ctx.fillStyle = light; ctx.fillRect(654, 726, 397, 122);
     font(32, dark, 'center'); ctx.fillText(fitLine(config.buttonText, 382), 852, 774);
     ctx.fillStyle = light; ctx.fillRect(32, 809, 155, 61);
     ctx.strokeStyle = dark; ctx.lineWidth = 3; ctx.strokeRect(36, 813, 147, 53);
     font(24, dark, 'center'); ctx.fillText('← 뒤로가기', 109, 827);
     drawNextButton();
-    const clickedAt = config.duration * (.3 + .375 * pageIndex / pages.length);
+    const clickedAt = config.duration * pageStart(pageIndex);
     if ((pageIndex > 0 && t >= clickedAt && t-clickedAt < .12) || (!playing && !busy && performance.now()<nextClickUntil)) drawNextDots();
     font(18, light, 'right'); ctx.fillText(`${pageIndex+1} / ${pages.length}`,564,742);
   }
   ctx.fillStyle = dark; ctx.fillRect(2, 909, 1067, 175);
   if (detail) {
-    font(28, light, 'center'); config.logs.split('\n').slice(0, 3).forEach((line, i) => ctx.fillText(fitLine(line, 1040), 534, 928 + i * 38));
+    if(window.HorrorEncounter) window.HorrorEncounter.drawLogs(t);
+    else {font(28, light, 'center'); config.logs.split('\n').slice(0, 3).forEach((line, i) => ctx.fillText(fitLine(line, 1040), 534, 928 + i * 38));}
   }
   if (!detail && hoverCard >= 0 && !playing && !busy) drawCardHover(hoverCard);
   if (detail && hoverAction && !playing && !busy) drawButtonTone(actionButtons[hoverAction]);
-  drawSceneTransition(t);
-  drawPlaybackPointer(t);
+  if (window.HorrorEncounter) window.HorrorEncounter.draw(t);
+  else {drawSceneTransition(t); drawPlaybackPointer(t);}
   canvas.dataset.stage = detail ? 'detail' : 'selection';
   canvas.dataset.page = String(pageIndex+1);
 }
@@ -282,7 +331,8 @@ function drawPlaybackPointer(t) {
   const center=i=>({x:cards[i].x+cards[i].w*.55,y:cards[i].y+cards[i].h*.55});
   const stops=[{at:0,x:490,y:680},{at:.04,...center(3)},{at:.10,...center(3)},
     {at:.14,...center(5)},{at:.20,...center(5)},{at:.24,...center(mysteryIndex)},{at:.35,...center(mysteryIndex)}];
-  stops.push({at:.40,x:593,y:749},{at:.80,x:593,y:749});
+  if (pages.length>1) stops.push({at:.40,x:593,y:749},{at:.80,x:593,y:749});
+  else stops.push({at:.80,...center(mysteryIndex)});
   stops.push({at:.83,x:848,y:785},{at:.89,x:848,y:785},
     {at:.915,x:736,y:761},{at:.94,x:109,y:841},{at:.96+.18/config.duration,x:109,y:841},{at:1,x:490,y:680});
   let from=stops[0],to=stops[stops.length-1];
@@ -336,11 +386,11 @@ $('back').onclick=()=>navigateScene(true);
 $('openDetail').onclick=()=>navigateScene(false);
 $('pageSelect').onchange=()=>{savePage();selectPage(Number($('pageSelect').value));};
 $('addPage').onclick=()=>{
-  savePage();pages.push(newPage());config.duration=Math.max(config.duration,Math.ceil(6+pages.length*3));selectPage(pages.length-1);
+  savePage();pages.push(newPage());config.duration=Math.max(config.duration,Math.ceil(window.HorrorEncounter ? pages.length*1.5 : 6+pages.length*3));selectPage(pages.length-1);
 };
 $('removePage').onclick=()=>{
   if(pages.length===1)return;
-  if(!confirm('이 페이지의 본문과 이미지를 삭제할까요?'))return;
+  if(!confirm('이 페이지의 제목과 본문을 삭제할까요? 공통 이미지는 유지됩니다.'))return;
   pages.splice(editorPage,1);selectPage(Math.min(editorPage,pages.length-1));
 };
 
@@ -375,8 +425,8 @@ function syncTime() {
 }
 
 function statusLayout() {
-  const step=Math.min(44,Math.floor(204/statuses.length));
-  const bodyY=65+statuses.length*step+2;
+  const step=statuses.length===6 ? 42 : Math.min(44,Math.floor(204/statuses.length));
+  const bodyY=Math.min(314,65+statuses.length*step+2);
   return {step,bodyY,bodyHeight:314-bodyY};
 }
 
@@ -401,6 +451,7 @@ function renderStatusEditor() {
   $('statusCount').value=`${statuses.length} / 6`;
   $('addStatus').disabled=statuses.length===6;
   const bodyHotspot=document.querySelector('[data-focus="infoBody"]');
+  bodyHotspot.hidden=bodyHeight<=8;
   bodyHotspot.style.setProperty('--y',`${bodyY/H*100}%`);
   bodyHotspot.style.setProperty('--h',`${bodyHeight/H*100}%`);
 }
@@ -434,6 +485,14 @@ $('settings').addEventListener('input', event => {
     if(['infoLevel','infoExperience'].includes(input.dataset.config)&&input.value!=='') {
       config[input.dataset.config]=String(Math.max(0,Math.min(999,Math.round(Number(input.value)||0))));input.value=config[input.dataset.config];
     }
+    if(input.dataset.config==='palettePreset' && scenePalettes[config.palettePreset]) {
+      [config.paletteInk,config.palettePaper,config.paletteAccent,config.paletteUseAccent]=scenePalettes[config.palettePreset];syncForm();
+    } else if(['paletteInk','palettePaper','paletteAccent','paletteUseAccent'].includes(input.dataset.config)) {
+      config.palettePreset='custom';$('palettePreset').value='custom';
+    }
+    if(input.dataset.config==='headerYear') {config.headerYear=Math.max(1,Math.min(9999,Math.round(Number(input.value)||1984)));input.value=config.headerYear;}
+    if(input.dataset.config==='headerMonth') {config.headerMonth=Math.max(1,Math.min(12,Math.round(Number(input.value)||1)));input.value=config.headerMonth;}
+    if(input.dataset.config==='doom') {config.doom=Math.max(0,Math.min(99,Math.round(Number(input.value)||0)));input.value=config.doom;}
     if(input.dataset.config==='duration') config.duration=Math.max(6,Math.min(120,config.duration || 12));
     time = Math.min(time, config.duration); $('storySizeValue').value = `${config.storySize} px`;
   } else if (input.dataset.statusIndex !== undefined) {
@@ -508,7 +567,7 @@ $('reset').onclick = () => {
   if (!confirm('문구, 이미지, 스탯을 처음 상태로 되돌릴까요?')) return;
   statuses=defaultStatuses();renderStatusEditor();
   Object.assign(config, defaults); Object.keys(stats).forEach(key => {stats[key] = '';});
-  editorPage=0;pages=[newPage(),newPage(),newPage()];pictures.scene=pages[0].picture;
+  editorPage=0;pages=window.HorrorEncounter ? window.HorrorEncounter.pages() : [newPage(),newPage(),newPage()];
   selectPage(0,false);
   Object.keys(pictures).forEach(clearPicture); playing = false; time = 0; syncForm(); draw(); notify('처음 상태로 되돌렸어요.');
 };
@@ -522,7 +581,7 @@ function lock(value) {
 
 function download(blob, filename) {
   const url = URL.createObjectURL(blob), link = document.createElement('a');
-  link.href = url; link.download = filename; link.click();
+  link.href = url; link.download = window.HorrorEncounter ? filename.replace("world-of-horror", "world-of-horror-2") : filename; link.click();
   setTimeout(() => URL.revokeObjectURL(url), 10000);
 }
 const breathe = () => new Promise(resolve => setTimeout(resolve, 0));
@@ -627,11 +686,12 @@ function tick(stamp) {
 }
 
 (async () => {
+  window.HorrorEncounter?.setup();
   renderStatusEditor();
   selectPage(0,false);lock(true); syncForm();
   try {
     const assets = window.HorrorAssets;
-    [frame, selectionFrame, portraitFrame] = await Promise.all([loadImage(assets.frame), loadImage(assets.selection), loadImage(assets.portraitFrame), document.fonts.load('22px Pixel', '한글 ABC')]);
+    [frame, selectionFrame, portraitFrame] = await Promise.all([loadImage(assets.frame), loadImage(assets.selection), loadImage(assets.portraitFrame), document.fonts.load('22px Pixel', '한글 ABC'), document.fonts.load('bold 11px Pixel', 'LVL EXP')]);
     await document.fonts.ready;
     const ornament=document.createElement('canvas'); ornament.width=184; ornament.height=276;
     const ornamentContext=ornament.getContext('2d');

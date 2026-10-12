@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>World of Horror 2 — Dear Series</title>
+<link rel="stylesheet" href="../css/06-horror.css"><link rel="stylesheet" href="../css/embedded.css">
+<!-- Font and GIF licenses: ../licenses/ -->
+</head>
+<body>
+<header class="app-header">
+  <a class="brand" href="#" aria-label="Dear Series"><span class="brand-mark" aria-hidden="true">d.</span>DEAR SERIES<span class="brand-divider"></span><span class="edition">SCENE 07</span></a>
+  <div class="header-right"><span class="offline"><i></i> 오프라인 편집기</span><button id="reset" class="quiet" type="button">초기화</button></div>
+</header>
+<main class="workspace">
+  <section class="studio" aria-labelledby="sceneTitle">
+    <div class="scene-heading"><div><p class="eyebrow">1-BIT MYSTERY / 1984</p><h1 id="sceneTitle">WORLD OF HORROR 2<span>월드 오브 호러 2</span></h1></div><span class="scene-badge">오마주</span></div>
+    <div class="preview-toolbar"><span><i class="live-dot"></i> 장면 미리보기</span><div><button id="openDetail" class="quiet" type="button">상세 화면</button><button id="back" class="quiet" type="button">← 뒤로가기</button><button id="regionsToggle" aria-pressed="false" class="quiet" type="button">편집 영역</button><button id="fullscreen" class="quiet" type="button" aria-label="장면 전체 화면">⛶ <span>전체 화면</span></button></div></div>
+    <div class="preview-shell" id="previewShell">
+      <div class="scene-wrap" id="sceneWrap">
+        <canvas id="scene" width="1448" height="1086" role="img" aria-label="월드 오브 호러 장면. 왼쪽 본문, 중앙 이미지, 오른쪽 지도와 인물 스탯, 하단 메시지."></canvas>
+        <div class="hotspots" id="hotspots" aria-label="장면에서 편집할 영역 선택">
+          <button type="button" data-section="storySection" data-focus="story" style="--x:1.8%;--y:20%;--w:41%;--h:44%" aria-label="왼쪽 본문 편집"><span>01 본문</span></button>
+          <button type="button" data-section="imageSection" data-focus="sceneUpload" style="--x:45.5%;--y:6%;--w:28%;--h:55%" aria-label="중앙 이미지 편집"><span>02 장면 이미지</span></button>
+          <button type="button" data-section="storySection" data-focus="mysteryName" style="--x:0.5%;--y:6%;--w:43.5%;--h:7%" aria-label="사건 제목 편집"><span>사건 제목</span></button>
+          <button type="button" data-section="storySection" data-focus="doom" style="--x:59.9%;--y:1.9%;--w:3.4%;--h:3.1%" aria-label="DOOM 수치 편집"><span>DOOM</span></button>
+          <button type="button" data-section="storySection" data-focus="headerYear" style="--x:4%;--y:0.4%;--w:14.5%;--h:4.8%" aria-label="연도와 월 편집"><span>연도 · 월</span></button><div id="statusHotspots"></div>
+          <button type="button" data-section="sequenceSection" data-focus="infoLevel" style="--x:94.61326%;--y:5.98527%;--w:4.76519%;--h:3.49908%" aria-label="레벨 편집"><span>레벨</span></button>
+          <button type="button" data-section="sequenceSection" data-focus="infoExperience" style="--x:94.61326%;--y:10.22099%;--w:4.76519%;--h:2.94659%" aria-label="경험치 편집"><span>경험치</span></button>
+          <button type="button" data-section="sequenceSection" data-focus="infoBody" style="--x:74.51657%;--y:13.90424%;--w:19.33702%;--h:14.73297%" aria-label="설명 편집"><span>설명</span></button>
+          <button type="button" data-section="sequenceSection" data-focus="ritual" style="--x:74.24033%;--y:32.87293%;--w:25.69061%;--h:5.70902%" aria-label="의식 문구 편집"><span>의식 문구</span></button>
+          <button type="button" data-section="characterSection" data-focus="portraitUpload" style="--x:80.80110%;--y:58.93186%;--w:12.70718%;--h:25.41436%" aria-label="인물 이미지 편집"><span>인물 이미지</span></button>
+          <button type="button" data-section="characterSection" data-focus="statstamina" style="--x:74.93094%;--y:59.48435%;--w:5.73204%;--h:6.26151%" aria-label="체력 편집"><span>체력</span></button>
+          <button type="button" data-section="characterSection" data-focus="statreason" style="--x:93.64641%;--y:59.48435%;--w:5.73204%;--h:6.26151%" aria-label="이성 편집"><span>이성</span></button>
+          <button type="button" data-section="characterSection" data-focus="statSTR" style="--x:74.93094%;--y:66.11418%;--w:5.73204%;--h:2.76243%" aria-label="STR 편집"><span>STR</span></button>
+          <button type="button" data-section="characterSection" data-focus="statDEX" style="--x:74.93094%;--y:68.87661%;--w:5.73204%;--h:2.76243%" aria-label="DEX 편집"><span>DEX</span></button>
+          <button type="button" data-section="characterSection" data-focus="statPER" style="--x:74.93094%;--y:71.63904%;--w:5.73204%;--h:2.94659%" aria-label="PER 편집"><span>PER</span></button>
+          <button type="button" data-section="characterSection" data-focus="statKNW" style="--x:93.64641%;--y:66.11418%;--w:5.73204%;--h:2.76243%" aria-label="KNW 편집"><span>KNW</span></button>
+          <button type="button" data-section="characterSection" data-focus="statCHR" style="--x:93.64641%;--y:68.87661%;--w:5.73204%;--h:2.76243%" aria-label="CHR 편집"><span>CHR</span></button>
+          <button type="button" data-section="characterSection" data-focus="statFND" style="--x:93.64641%;--y:71.63904%;--w:5.73204%;--h:2.94659%" aria-label="FND 편집"><span>FND</span></button>
+          <button type="button" data-section="characterSection" data-focus="characterName" style="--x:74.93094%;--y:78.54512%;--w:5.73204%;--h:3.31492%" aria-label="이름 / 상태 편집"><span>이름 / 상태</span></button>
+          <button type="button" data-section="logSection" data-focus="logs" style="--x:1%;--y:84%;--w:72%;--h:15%" aria-label="하단 메시지 편집"><span>05 메시지</span></button>
+        </div>
+      </div>
+    </div>
+    <div class="transport">
+      <button id="play" class="play-button" type="button" aria-label="재생">▶</button>
+      <span class="time"><output id="currentTime">00:00</output><span>/</span><span id="totalTime">00:06</span></span>
+      <input id="scrub" type="range" min="0" max="6" step="0.01" value="0" aria-label="재생 위치">
+      <span class="loop-label">↻ 반복</span>
+    </div>
+    <div class="preview-caption"><span>1448 × 1086 <span class="caption-dot">·</span> 원본 비율</span><span>장면을 클릭해 해당 영역을 편집하세요.</span></div>
+    <div class="export-bar"><div><span class="export-title">장면 저장</span><span class="export-note">편집 패널 없이 장면만 저장됩니다.</span></div><div class="export-buttons"><button type="button" id="png">PNG <span>↓</span></button><button type="button" id="gif">GIF <span>↓</span></button><button type="button" id="video" class="primary">영상 <span>↓</span></button></div></div>
+    <div class="status-row"><p id="notice" role="status" aria-live="polite">준비 중…</p><button id="cancel" class="quiet" type="button" hidden>저장 취소</button></div>
+    <progress id="progress" max="1" value="0" hidden aria-label="저장 진행률"></progress>
+    <p class="session-note">업로드한 이미지와 수정 내용은 이 창에서만 유지됩니다.</p>
+  </section>
+  <aside class="inspector" aria-labelledby="inspectorTitle">
+    <div class="inspector-heading"><div><p class="eyebrow">SCENE SETTINGS</p><h2 id="inspectorTitle">장면 편집</h2></div><span class="settings-count">06 AREAS</span></div>
+    <form id="settings" autocomplete="off"><fieldset id="settingsFields"><legend class="sr-only">장면 설정</legend>
+      <details id="storySection" open><summary><span class="section-number">01</span>본문<span class="chevron">⌄</span></summary><div class="section-content">
+        <label for="mysteryName">사건 제목</label><input id="mysteryName" type="text" maxlength="70" placeholder="한자를 포함한 전체 사건 제목" data-config="mysteryName"><div class="two-fields"><label for="headerYear">연도<input id="headerYear" type="number" min="1" max="9999" step="1" value="1984" data-config="headerYear" data-number></label><label for="headerMonth">월<select id="headerMonth" data-config="headerMonth" data-number><option value="1">1월</option><option value="2">2월</option><option value="3">3월</option><option value="4">4월</option><option value="5">5월</option><option value="6">6월</option><option value="7">7월</option><option value="8">8월</option><option value="9">9월</option><option value="10">10월</option><option value="11">11월</option><option value="12">12월</option></select></label></div><label for="doom">DOOM (%)</label><input id="doom" type="number" min="0" max="99" step="1" value="0" data-config="doom" data-number><label for="mysteryDescription">미스터리 설명</label><textarea id="mysteryDescription" rows="2" maxlength="120" placeholder="커서를 올렸을 때 흰 영역에 표시할 설명" data-config="mysteryDescription"></textarea><p class="field-hint">선택 화면의 설명은 최대 2줄로 표시됩니다.</p><label for="pageSelect">편집할 페이지</label><select id="pageSelect"></select><div class="two-fields"><button type="button" id="addPage">＋ 페이지 추가</button><button type="button" id="removePage">페이지 삭제</button></div><p class="field-hint">첫 페이지는 대화, 이후 페이지는 선택 결과입니다. 장면 이미지는 모든 페이지가 함께 사용합니다.</p><label for="storyTitle">페이지 제목</label><input id="storyTitle" type="text" maxlength="70" placeholder="이 페이지의 제목을 입력하세요" data-config="storyTitle">
+        <label for="story">내용</label><textarea id="story" rows="5" maxlength="700" placeholder="이곳에 적은 문장이&#10;왼쪽 창에 표시됩니다." data-config="story"></textarea>
+        <div class="field-row"><label for="storySize">글자 크기</label><output id="storySizeValue">22 px</output></div><input id="storySize" type="range" min="16" max="30" step="2" value="22" data-config="storySize" data-number>
+        <label for="buttonText">확인 버튼 문구</label><input id="buttonText" type="text" maxlength="35" value="이 미스터리를 조사한다" data-config="buttonText">
+        <label for="choiceA">첫 번째 선택지</label><input id="choiceA" maxlength="40" data-config="choiceA">
+        <label for="choiceB">두 번째 선택지</label><input id="choiceB" maxlength="40" data-config="choiceB">
+        <label for="selectedChoice">재생 중 선택할 항목</label><select id="selectedChoice" data-config="selectedChoice" data-number><option value="0">첫 번째 선택지</option><option value="1">두 번째 선택지</option></select>
+      </div></details>
+      <details id="sequenceSection" open><summary><span class="section-number">02</span>화면 전환 · 우측 패널</summary><div class="section-content"><p class="field-hint">대화 → 선택지에 커서 이동 → 선택 → 결과 → 확인 순서로 재생됩니다. 선택지를 직접 누를 수도 있어요.</p><div class="field-row"><span>상태</span><output id="statusCount"></output></div><div id="statusRows"></div><button type="button" id="addStatus">＋ 상태 추가</button><p class="field-hint">1~6개까지 표시할 수 있어요. 상태가 늘면 아래 설명을 표시할 공간이 줄어듭니다.</p><div class="two-fields"><label>레벨<input type="number" id="infoLevel" data-config="infoLevel" min="0" max="999" step="1"></label><label>경험치<input type="number" id="infoExperience" data-config="infoExperience" min="0" max="999" step="1"></label></div><label>설명<textarea id="infoBody" data-config="infoBody" rows="4" maxlength="180"></textarea></label><label>의식 문구<input id="ritual" data-config="ritual" maxlength="30"></label></div></details><details id="imageSection" open><summary><span class="section-number">02</span>장면 이미지<span class="chevron">⌄</span></summary><div class="section-content">
+        <label class="upload-box" for="sceneUpload"><span class="upload-icon" aria-hidden="true">＋</span><strong id="sceneFileName">이미지 선택</strong><small>PNG · JPG · WEBP</small><input id="sceneUpload" type="file" accept="image/png,image/jpeg,image/webp" data-upload="scene"></label>
+        <div class="image-tools" data-tools="scene" hidden><div class="field-row"><label for="sceneZoom">확대</label><button type="button" class="text-button" data-remove="scene">이미지 지우기</button></div><input id="sceneZoom" type="range" min="1" max="3" step="0.05" value="1" data-image="scene" data-property="zoom" aria-label="장면 이미지 확대"><label for="sceneBrightness">명도</label><input id="sceneBrightness" type="range" min="-100" max="100" step="1" value="0" data-image="scene" data-property="brightness" aria-label="장면 이미지 명도"><div class="crop-grid"><label>가로 위치<input type="range" min="0" max="1" step="0.01" value="0.5" data-image="scene" data-property="x" aria-label="장면 이미지 가로 위치"></label><label>세로 위치<input type="range" min="0" max="1" step="0.01" value="0.5" data-image="scene" data-property="y" aria-label="장면 이미지 세로 위치"></label></div></div>
+        <p class="field-hint">원본에 맞춰 두 가지 색의 픽셀 이미지로 표시됩니다.</p>
+      </div></details>
+      <details id="characterSection"><summary><span class="section-number">03</span>인물 · 스탯<span class="chevron">⌄</span></summary><div class="section-content">
+        <label for="characterName">이름 / 상태</label><input id="characterName" type="text" maxlength="24" placeholder="예: 도망자" data-config="characterName">
+        <label class="upload-box compact" for="portraitUpload"><span class="upload-icon" aria-hidden="true">＋</span><strong id="portraitFileName">인물 이미지 선택</strong><small>가운데 뼈 아치 프레임 안에 채워집니다.</small><input id="portraitUpload" type="file" accept="image/png,image/jpeg,image/webp" data-upload="portrait"></label>
+        <div class="image-tools" data-tools="portrait" hidden><div class="field-row"><label for="portraitZoom">확대</label><button type="button" class="text-button" data-remove="portrait">이미지 지우기</button></div><input id="portraitZoom" type="range" min="1" max="3" step="0.05" value="1" data-image="portrait" data-property="zoom" aria-label="인물 이미지 확대"><label for="portraitBrightness">명도</label><input id="portraitBrightness" type="range" min="-100" max="100" step="1" value="0" data-image="portrait" data-property="brightness" aria-label="인물 이미지 명도"><div class="crop-grid"><label>가로 위치<input type="range" min="0" max="1" step="0.01" value="0.5" data-image="portrait" data-property="x" aria-label="인물 이미지 가로 위치"></label><label>세로 위치<input type="range" min="0" max="1" step="0.01" value="0.5" data-image="portrait" data-property="y" aria-label="인물 이미지 세로 위치"></label></div></div>
+        <p class="field-hint">인물은 프레임 안에, 스탯은 좌우에 표시됩니다.</p>
+        <div class="stat-grid vital"><label>체력<input type="number" min="0" max="99" step="1" placeholder="—" id="statstamina" data-stat="stamina"></label><label>이성<input type="number" min="0" max="99" step="1" placeholder="—" id="statreason" data-stat="reason"></label></div>
+        <div class="stat-grid"><label>STR <span>힘</span><input type="number" min="0" max="99" step="1" placeholder="—" id="statSTR" data-stat="STR"></label><label>KNW <span>지식</span><input type="number" min="0" max="99" step="1" placeholder="—" id="statKNW" data-stat="KNW"></label><label>DEX <span>민첩</span><input type="number" min="0" max="99" step="1" placeholder="—" id="statDEX" data-stat="DEX"></label><label>CHR <span>매력</span><input type="number" min="0" max="99" step="1" placeholder="—" id="statCHR" data-stat="CHR"></label><label>PER <span>지각</span><input type="number" min="0" max="99" step="1" placeholder="—" id="statPER" data-stat="PER"></label><label>FND <span>자금</span><input type="number" min="0" max="99" step="1" placeholder="—" id="statFND" data-stat="FND"></label></div>
+      </div></details>
+      <details id="logSection"><summary><span class="section-number">04</span>하단 메시지<span class="chevron">⌄</span></summary><div class="section-content"><label for="logs">메시지 기록</label><textarea id="logs" rows="6" maxlength="400" data-config="logs"></textarea><label for="resultLog">두 번째 페이지에서 추가할 기록</label><input id="resultLog" type="text" maxlength="100" data-config="resultLog" placeholder="비워두면 기록을 추가하지 않습니다"><p class="field-hint">최대 3줄을 표시합니다. 두 번째 페이지에서 새 기록이 추가되면 기존 기록이 위로 밀립니다.</p></div></details>
+      <details id="paletteSection" open><summary><span class="section-number">色</span>팔레트<span class="chevron">⌄</span></summary><div class="section-content"><label for="palettePreset">색 조합</label><select id="palettePreset" data-config="palettePreset"><option value="mono">흑백</option><option value="sepia">세피아 · 황금</option><option value="blueprint">청사진 · 크림</option><option value="cyan">흑백 · 청록</option><option value="crimson">적청</option><option value="green">오래된 녹색 화면</option><option value="custom">직접 설정</option></select><div class="two-fields"><label for="paletteInk">어두운 색<input id="paletteInk" type="color" data-config="paletteInk" value="#000000"></label><label for="palettePaper">밝은 색<input id="palettePaper" type="color" data-config="palettePaper" value="#ffffff"></label></div><label for="paletteAccent">강조색</label><input id="paletteAccent" type="color" data-config="paletteAccent" value="#ffffff"><label class="check-label"><input id="paletteUseAccent" type="checkbox" data-config="paletteUseAccent">이미지 영역에 강조색 적용</label><p class="field-hint">PNG·GIF·영상에도 선택한 색이 적용됩니다.</p></div></details>
+      <details id="motionSection"><summary><span class="section-number">05</span>재생 · 저장<span class="chevron">⌄</span></summary><div class="section-content"><label for="animation">본문 연출</label><select id="animation" data-config="animation"><option value="still">정지 화면</option><option value="typewriter">한 글자씩 나타나기</option></select><label class="check-label"><input id="blink" type="checkbox" checked data-config="blink">다음 화살표 깜빡임</label><div class="two-fields"><label>재생 길이<input id="duration" type="number" min="6" max="120" step="1" value="12" data-config="duration" data-number aria-label="재생 길이 (초)"></label><label>GIF 가로 크기<select id="gifWidth" data-config="gifWidth" data-number><option value="669">669 px</option><option value="1000">1000 px</option><option value="1448" selected>1448 px</option></select></label></div><p class="field-hint">GIF는 저장 전에 실제 용량을 15 MB 기준과 비교합니다. 영상은 무음으로 저장됩니다.</p></div></details>
+    </fieldset></form>
+    <div class="inspector-footer"><span class="swatch"></span><span>BLACK / WHITE <span class="footer-slash">/</span> 1-BIT</span></div>
+  </aside>
+</main>
+<script src="../js/06-horror-assets.js"></script><script src="../js/gif-codec.js"></script><script src="../js/gif-review.js"></script><script src="../js/07-horror2.js"></script><script src="../js/06-horror.js"></script><script src="../js/frame-host.js"></script></body>
+</html>
