@@ -9,24 +9,26 @@ const defaults = {
   buttonText: '이 미스터리를 조사한다', characterName: '',
   logs: '(중요한 메시지는 이곳에 표시됩니다)\n[13:31:20]: 새로운 주문을 배웠다: 미다스의 손길!\n[13:31:20]: 새로운 상태를 얻었다: 도망자',
   animation: 'still', blink: true, duration: 12, gifWidth: 1448,
-  infoTitle: '피부 박리', infoKind: '흡수', infoLevel: '1', infoCount: '0',
-  infoBody: '', ritual: '활성화된 의식 없음'
+  infoLevel: '1', infoExperience: '0', infoBody: '', ritual: '활성화된 의식 없음'
 };
 const config = {...defaults};
+const defaultStatuses = () => [{name:'피부 박리'},{name:'흡수'}];
+let statuses = defaultStatuses();
 const stats = Object.fromEntries(['stamina', 'reason', 'STR', 'DEX', 'PER', 'KNW', 'CHR', 'FND'].map(key => [key, '']));
-const imageAreas = {scene: {x: 657, y: 65, w: 410, h: 604}, portrait: {x: 1083, y: 638, w: 357, h: 280}, selection: {x: 26, y: 212, w: 1033, h: 565}};
-const pictures = Object.fromEntries(Object.keys(imageAreas).map(key => [key, {image: null, rendered: null, zoom: 1, x: .5, y: .5}]));
-const emptyPicture = () => ({image:null, rendered:null, zoom:1, x:.5, y:.5});
+const imageAreas = {scene: {x: 657, y: 65, w: 410, h: 604}, portrait: {x: 1170, y: 640, w: 184, h: 276}};
+const pictures = Object.fromEntries(Object.keys(imageAreas).map(key => [key, {image: null, rendered: null, zoom: 1, x: .5, y: .5, brightness: 0}]));
+const emptyPicture = () => ({image:null, rendered:null, zoom:1, x:.5, y:.5, brightness:0});
 const newPage = () => ({title:'', story:'', picture:emptyPicture()});
 const cards = [{x:287,y:365,w:85,h:119},{x:786,y:345,w:90,h:125},{x:518,y:426,w:108,h:70},{x:368,y:505,w:81,h:125},{x:550,y:548,w:89,h:128},{x:716,y:512,w:100,h:126}];
 const mysteryIndex = 2;
 let editorPage = 0, hoverCard = -1, hoverNext = false, hoverAction = '';
 let nextClickUntil = 0;
+let navigation = null, manualPointer = null;
 const nextButton = {x:574, y:720, w:44, h:48};
-const actionButtons = {back:{x:29,y:813,w:147,h:53}, investigate:{x:654,y:726,w:397,h:122,inset:0}};
-let pages = [newPage(), newPage()];
+const actionButtons = {back:{x:36,y:813,w:147,h:53}, investigate:{x:654,y:726,w:397,h:122,inset:0}};
+let pages = [newPage(), newPage(), newPage()];
 pictures.scene = pages[0].picture;
-let frame, selectionFrame, dark = '#000000', light = '#ffffff', palette;
+let frame, selectionFrame, portraitFrame, portraitClip, dark = '#000000', light = '#ffffff', palette;
 let ready = false, playing = false, busy = false, cancelled = false, time = 0, lastTick = 0;
 
 function notify(message, error = false) {
@@ -80,7 +82,7 @@ function drawStory(t, page) {
   const gap = title.length && body.length ? lineHeight : 0;
   const height = (title.length + body.length) * lineHeight + gap;
   let y = Math.max(188, 337 - height / 2);
-  let remaining = config.animation === 'typewriter' ? Math.floor(t / (config.duration * .5 / pages.length * .65) * Array.from(page.title + page.story).length) : Infinity;
+  let remaining = config.animation === 'typewriter' ? Math.floor(t / (config.duration * .375 / pages.length * .65) * Array.from(page.title + page.story).length) : Infinity;
   ctx.save(); ctx.beginPath(); ctx.rect(40, 176, 502, 304); ctx.clip();
   for (const [index, lines] of [title, body].entries()) {
     if (index) y += gap;
@@ -115,17 +117,17 @@ function selectPage(index, preview = true) {
   $('sceneFileName').textContent = pictures.scene.image ? `${index+1} 페이지 이미지` : '이미지 선택';
   document.querySelector('[data-tools="scene"]').hidden = !pictures.scene.image;
   document.querySelectorAll('[data-image="scene"]').forEach(input=>{input.value=pictures.scene[input.dataset.property];});
-  if (preview) {playing=false; time=config.duration*(.3 + .5*(index+.45)/pages.length);}
+  if (preview) {playing=false; time=config.duration*(.3 + .375*(index+.45)/pages.length);}
   syncForm(); draw();
 }
 
 function pageAt(t) {
-  return Math.max(0,Math.min(pages.length-1,Math.floor((t/config.duration-.3)/(.5/pages.length))));
+  return Math.max(0,Math.min(pages.length-1,Math.floor((t/config.duration-.3)/(.375/pages.length))));
 }
 
 function sequenceStage(t) {
   const phase = t / config.duration;
-  return phase < .3 || phase >= .92 ? 'selection' : 'detail';
+  return phase < .3 || phase >= .96 ? 'selection' : 'detail';
 }
 
 function drawSequence(t) {
@@ -134,52 +136,78 @@ function drawSequence(t) {
   ctx.imageSmoothingEnabled = false;
   ctx.drawImage(detail ? frame : selectionFrame, 0, 0, W, H);
   ctx.drawImage(selectionFrame, 0, 0, W, 60, 0, 0, W, 60);
-  if (!detail && pictures.selection.rendered) {
-    const a = imageAreas.selection; ctx.drawImage(pictures.selection.rendered, a.x, a.y, a.w, a.h);
-  }
   const pageIndex = pageAt(t), page = pages[pageIndex];
   if (detail) {
     const a = imageAreas.scene;
     if (page.picture.rendered) ctx.drawImage(page.picture.rendered, a.x, a.y, a.w, a.h);
     ctx.save(); ctx.translate(0, 20); ctx.scale(1.12, 1.48);
-    drawStory(Math.max(0, t - config.duration * (.3 + .5*pageIndex/pages.length)),page); ctx.restore();
-    ctx.fillStyle = light; ctx.fillRect(1078, 65, 283, 38); ctx.fillRect(1078, 111, 283, 32);
-    font(28, dark, 'center'); ctx.fillText(fitLine(config.infoTitle, 275), 1218, 70);
-    ctx.fillText(fitLine(config.infoKind, 275), 1218, 111);
-    ctx.fillStyle = light; ctx.fillRect(1370, 66, 69, 34); ctx.fillRect(1370, 111, 69, 32);
-    font(26, dark, 'right'); ctx.fillText(config.infoLevel, 1436, 72); ctx.fillText(config.infoCount, 1436, 114);
-    ctx.fillStyle = light; ctx.fillRect(1079, 151, 280, 160);
-    font(21, dark); wrapText(config.infoBody, 264).slice(0, 6).forEach((line, i) => ctx.fillText(line, 1086, 158 + i * 24));
+    drawStory(Math.max(0, t - config.duration * (.3 + .375*pageIndex/pages.length)),page); ctx.restore();
+    const {step,bodyY,bodyHeight} = statusLayout();
+    ctx.fillStyle = dark; ctx.fillRect(1074,62,292,254);
+    statuses.forEach((status,i) => {
+      const y=65+i*step, height=step-6;
+      ctx.drawImage(frame,1074,62,292,44,1074,y-3,292,step);
+      ctx.fillStyle=light; ctx.fillRect(1078,y,283,height);
+      font(Math.min(28,height-4),dark,'center'); ctx.textBaseline='alphabetic';
+      const line=fitLine(status.name,275), metrics=ctx.measureText(line);
+      ctx.fillText(line,Math.round(1219.5+(metrics.actualBoundingBoxLeft-metrics.actualBoundingBoxRight)/2),Math.round(y+height/2+(metrics.actualBoundingBoxAscent-metrics.actualBoundingBoxDescent)/2));
+    });
+    ctx.fillStyle=light;ctx.fillRect(1370,66,69,34);ctx.fillRect(1370,111,69,32);
+    font(26,dark,'right');ctx.textBaseline='alphabetic';
+    for(const [value,y,height] of [[config.infoLevel,66,34],[config.infoExperience,111,32]]) {
+      const metrics=ctx.measureText(value);
+      ctx.fillText(value,1436,Math.round(y+height/2+(metrics.actualBoundingBoxAscent-metrics.actualBoundingBoxDescent)/2));
+    }
+    font(11,dark); ctx.font='bold 11px Pixel, monospace'; ctx.textBaseline='bottom';
+    ctx.fillText('LVL',1372,99); ctx.fillText('EXP',1372,142);
+    ctx.drawImage(frame,1074,147,292,169,1074,bodyY-3,292,bodyHeight+5);
+    ctx.fillStyle=light; ctx.fillRect(1079,bodyY,280,bodyHeight-3);
+    font(21,dark); wrapText(config.infoBody,264).slice(0,Math.min(6,Math.floor((bodyHeight-8)/24))).forEach((line,i)=>ctx.fillText(line,1086,bodyY+4+i*24));
     ctx.fillStyle = light; ctx.fillRect(1074, 318, 374, 1);
     ctx.fillStyle = dark; ctx.fillRect(1074, 319, 374, 101);
     ctx.drawImage(frame, 1074, 319, 374, 31, 1074, 325, 374, 31);
     ctx.fillStyle = light; ctx.fillRect(1075, 357, 372, 62);
     font(23, dark); ctx.fillText(fitLine(config.ritual, 350), 1083, 366);
   }
+  ctx.fillStyle = light; ctx.fillRect(1083,638,357,280);
   const a = imageAreas.portrait;
-  ctx.fillStyle = light; ctx.fillRect(a.x, a.y, a.w, a.h);
-  if (pictures.portrait.rendered) ctx.drawImage(pictures.portrait.rendered, a.x, a.y, a.w, a.h);
-  const ink = pictures.portrait.rendered ? light : dark;
-  function portraitText(text, x, y) {
-    if (pictures.portrait.rendered) {
-      ctx.save(); ctx.strokeStyle = dark; ctx.lineWidth = 3; ctx.lineJoin = 'round';
-      ctx.strokeText(text, x, y); ctx.restore();
-    }
-    ctx.fillText(text, x, y);
+  ctx.drawImage(portraitFrame,a.x,a.y);
+  if (pictures.portrait.rendered) {
+    ctx.save(); ctx.translate(a.x,a.y); ctx.clip(portraitClip);
+    ctx.drawImage(pictures.portrait.rendered,0,0,a.w,a.h); ctx.restore();
   }
-  font(27, ink); portraitText(`체력 ${stats.stamina}`, 1090, 682);
-  font(27, ink, 'right'); portraitText(`${stats.reason} 이성`, 1434, 682);
-  ['STR', 'DEX', 'PER'].forEach((key, i) => {font(25, ink); portraitText(`${key}:${stats[key]}`, 1090, 722 + i * 30);});
-  ['KNW', 'CHR', 'FND'].forEach((key, i) => {font(25, ink, 'right'); portraitText(`${stats[key]}:${key}`, 1434, 722 + i * 30);});
-  if (config.characterName) {font(23, ink, 'center'); portraitText(fitLine(config.characterName, 330), 1261, 861);}
+  ctx.fillStyle=dark; ctx.beginPath();
+  [[1083,638],[1440,638],[1440,648],[1360,648],[1332,676],[1321,676],
+   [1310,659],[1284,643],[1262,640],[1240,643],[1214,659],[1203,676],
+   [1192,676],[1164,648],[1083,648]].forEach(([x,y],i)=>i ? ctx.lineTo(x,y) : ctx.moveTo(x,y));
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle=dark;
+  ctx.fillRect(1083,651,81,1); ctx.fillRect(1360,651,80,1);
+  for(let step=0;step<7;step++) {
+    ctx.fillRect(1164+step*4,652+step*4,4,1);
+    ctx.fillRect(1356-step*4,652+step*4,4,1);
+  }
+  ctx.fillRect(1192,679,11,1); ctx.fillRect(1321,679,11,1);
+  font(27,dark); ctx.fillText(stats.stamina,1090,655);
+  font(27,dark,'right'); ctx.fillText(stats.reason,1434,655);
+  font(23,dark); ctx.fillText('체력',1090,684);
+  font(23,dark,'right'); ctx.fillText('이성',1434,684);
+  ctx.strokeStyle=dark; ctx.lineWidth=2; ctx.beginPath();
+  for (const y of [713,809]) {
+    ctx.moveTo(1090,y); ctx.lineTo(1168,y); ctx.moveTo(1356,y); ctx.lineTo(1434,y);
+  }
+  ctx.stroke();
+  ['STR','DEX','PER'].forEach((key,i)=>{font(21,dark);ctx.fillText(`${key}:${stats[key]}`,1090,722+i*30);});
+  ['KNW','CHR','FND'].forEach((key,i)=>{font(21,dark,'right');ctx.fillText(`${stats[key]}:${key}`,1434,722+i*30);});
+  if (config.characterName) {font(18,dark);ctx.fillText(fitLine(config.characterName,78),1090,861);}
   if (detail) {
     ctx.fillStyle = light; ctx.fillRect(654, 726, 397, 122);
     font(32, dark, 'center'); ctx.fillText(fitLine(config.buttonText, 382), 852, 774);
-    ctx.fillStyle = light; ctx.fillRect(25, 809, 155, 61);
-    ctx.strokeStyle = dark; ctx.lineWidth = 3; ctx.strokeRect(29, 813, 147, 53);
-    font(24, dark, 'center'); ctx.fillText('← 뒤로가기', 102, 827);
+    ctx.fillStyle = light; ctx.fillRect(32, 809, 155, 61);
+    ctx.strokeStyle = dark; ctx.lineWidth = 3; ctx.strokeRect(36, 813, 147, 53);
+    font(24, dark, 'center'); ctx.fillText('← 뒤로가기', 109, 827);
     drawNextButton();
-    const clickedAt = config.duration * (.3 + .5 * pageIndex / pages.length);
+    const clickedAt = config.duration * (.3 + .375 * pageIndex / pages.length);
     if ((pageIndex > 0 && t >= clickedAt && t-clickedAt < .12) || (!playing && !busy && performance.now()<nextClickUntil)) drawNextDots();
     font(18, light, 'right'); ctx.fillText(`${pageIndex+1} / ${pages.length}`,564,742);
   }
@@ -189,9 +217,23 @@ function drawSequence(t) {
   }
   if (!detail && hoverCard >= 0 && !playing && !busy) drawCardHover(hoverCard);
   if (detail && hoverAction && !playing && !busy) drawButtonTone(actionButtons[hoverAction]);
+  drawSceneTransition(t);
   drawPlaybackPointer(t);
   canvas.dataset.stage = detail ? 'detail' : 'selection';
   canvas.dataset.page = String(pageIndex+1);
+}
+
+function drawSceneTransition(t) {
+  const distance = Math.min(Math.abs(t-config.duration*.3), Math.abs(t-config.duration*.96));
+  if (distance >= .16) return;
+  const cover = 1-distance/.16;
+  ctx.save(); ctx.beginPath(); ctx.rect(2,60,1071,844); ctx.clip(); ctx.fillStyle = dark;
+  for (let x=2;x<1073;x+=12) {
+    const stagger = (Math.floor(x/12)*7%11)/11;
+    const height = 844*Math.min(1,cover*(1.25+stagger*.35));
+    ctx.fillRect(x,60,12,Math.ceil(height));
+  }
+  ctx.restore();
 }
 
 function drawNextButton() {
@@ -226,7 +268,9 @@ function drawCardHover(index) {
   ctx.fillStyle = dark; ctx.fillRect(641,786,418,91);
   ctx.strokeStyle = light; ctx.lineWidth = 2; ctx.strokeRect(645,790,410,83);
   const title=index === mysteryIndex ? config.mysteryName : '? ? ?';
-  font(19,light,'center'); ctx.fillText(fitLine(title,395),850,794);
+  font(19,light,'center'); ctx.textBaseline = 'alphabetic';
+  const heading = fitLine(title,395), metrics = ctx.measureText(heading);
+  ctx.fillText(heading,850,Math.round(804+(metrics.actualBoundingBoxAscent-metrics.actualBoundingBoxDescent)/2));
   ctx.fillStyle = light; ctx.fillRect(649,817,402,52);
   font(22,dark,'center');
   const lines=wrapText(index === mysteryIndex ? config.mysteryDescription : '아직 확인되지 않은 미스터리',382).slice(0,2);
@@ -237,14 +281,15 @@ function drawPlaybackPointer(t) {
   const phase=t/config.duration;
   const center=i=>({x:cards[i].x+cards[i].w*.55,y:cards[i].y+cards[i].h*.55});
   const stops=[{at:0,x:490,y:680},{at:.04,...center(3)},{at:.10,...center(3)},
-    {at:.14,...center(5)},{at:.20,...center(5)},{at:.24,...center(mysteryIndex)},{at:.30,...center(mysteryIndex)}];
-  stops.push({at:.3+Math.min(.035,.25/pages.length),x:593,y:749},{at:.80,x:593,y:749});
-  stops.push({at:.83,x:848,y:785},{at:.85,x:848,y:785},
-    {at:.87,x:736,y:761},{at:.89,x:102,y:841},{at:.92,x:102,y:841},{at:1,x:490,y:680});
+    {at:.14,...center(5)},{at:.20,...center(5)},{at:.24,...center(mysteryIndex)},{at:.35,...center(mysteryIndex)}];
+  stops.push({at:.40,x:593,y:749},{at:.80,x:593,y:749});
+  stops.push({at:.83,x:848,y:785},{at:.89,x:848,y:785},
+    {at:.915,x:736,y:761},{at:.94,x:109,y:841},{at:.96+.18/config.duration,x:109,y:841},{at:1,x:490,y:680});
   let from=stops[0],to=stops[stops.length-1];
   for(let i=1;i<stops.length;i++)if(phase<=stops[i].at){from=stops[i-1];to=stops[i];break;}
   const mix=Math.max(0,Math.min(1,(phase-from.at)/(to.at-from.at||1)));
-  const x=Math.round((from.x+(to.x-from.x)*mix)/2)*2,y=Math.round((from.y+(to.y-from.y)*mix)/2)*2;
+  let x=Math.round((from.x+(to.x-from.x)*mix)/2)*2,y=Math.round((from.y+(to.y-from.y)*mix)/2)*2;
+  if (manualPointer && !playing && (!busy || navigation)) ({x,y}=manualPointer);
   if(sequenceStage(t)==='selection') {
     const index=cards.findIndex(b=>x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h);
     if(index>=0&&!(hoverCard>=0&&!playing&&!busy))drawCardHover(index);
@@ -258,11 +303,13 @@ function drawPlaybackPointer(t) {
   ctx.lineTo(16,27);ctx.lineTo(11,16);ctx.lineTo(20,16);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();
 }
 
-function navigateScene(back) {
+function navigateScene(back, point) {
   if(busy||!ready)return;
-  savePage();if(!back){selectPage(0);return;}
-  playing=false;hoverCard=-1;
-  time=config.duration*(back ? .96 : .3+.225/pages.length);syncTime();draw();
+  savePage(); playing=false; hoverCard=-1; hoverAction='';
+  if (!back) selectPage(0,false);
+  manualPointer=point || (back ? {x:109,y:841} : {x:577,y:465});
+  navigation={start:performance.now(),boundary:config.duration*(back ? .96 : .3)};
+  lock(true); time=navigation.boundary-.16; syncTime(); draw();
 }
 function canvasPoint(event) {
   const b=canvas.getBoundingClientRect();return {x:(event.clientX-b.left)*W/b.width,y:(event.clientY-b.top)*H/b.height};
@@ -270,6 +317,7 @@ function canvasPoint(event) {
 canvas.addEventListener('mousemove',event=>{
   if(busy||playing)return;
   const {x,y}=canvasPoint(event);
+  manualPointer={x,y};
   hoverCard=sequenceStage(time)==='selection'?cards.findIndex(c=>x>=c.x&&x<=c.x+c.w&&y>=c.y&&y<=c.y+c.h):-1;
   const b=nextButton;
   hoverNext=sequenceStage(time)==='detail'&&pageAt(time)<pages.length-1&&x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h;
@@ -280,9 +328,9 @@ canvas.addEventListener('mouseleave',()=>{hoverCard=-1;hoverNext=false;hoverActi
 canvas.addEventListener('click',event=>{
   if(busy||!ready)return;
   const {x,y}=canvasPoint(event),detail=sequenceStage(time)==='detail';
-  if(detail&&x>=25&&x<=180&&y>=809&&y<=870)navigateScene(true);
+  if(detail&&x>=32&&x<=187&&y>=809&&y<=870)navigateScene(true,{x,y});
   else if(detail&&x>=nextButton.x&&x<=nextButton.x+nextButton.w&&y>=nextButton.y&&y<=nextButton.y+nextButton.h&&pageAt(time)<pages.length-1){savePage();nextClickUntil=performance.now()+120;selectPage(pageAt(time)+1);setTimeout(()=>{if(!playing&&!busy)draw();},130);}
-  else if(!detail){const index=cards.findIndex(c=>x>=c.x&&x<=c.x+c.w&&y>=c.y&&y<=c.y+c.h);if(index===mysteryIndex)navigateScene(false);}
+  else if(!detail){const index=cards.findIndex(c=>x>=c.x&&x<=c.x+c.w&&y>=c.y&&y<=c.y+c.h);if(index===mysteryIndex)navigateScene(false,{x,y});}
 });
 $('back').onclick=()=>navigateScene(true);
 $('openDetail').onclick=()=>navigateScene(false);
@@ -311,7 +359,7 @@ function renderPicture(key) {
   const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
   for (let y = 0; y < result.height; y++) for (let x = 0; x < result.width; x++) {
     const offset = (y * result.width + x) * 4, p = pixels.data;
-    const luminance = p[offset] * .2126 + p[offset + 1] * .7152 + p[offset + 2] * .0722;
+    const luminance = p[offset] * .2126 + p[offset + 1] * .7152 + p[offset + 2] * .0722 + picture.brightness * 2.55;
     const color = palette[luminance > (bayer[(y % 4) * 4 + x % 4] + .5) * 16 ? 1 : 0];
     p[offset] = color[0]; p[offset + 1] = color[1]; p[offset + 2] = color[2]; p[offset + 3] = 255;
   }
@@ -325,6 +373,48 @@ function syncTime() {
   $('play').textContent = playing ? 'Ⅱ' : '▶';
   $('play').setAttribute('aria-label', playing ? '일시 정지' : '재생');
 }
+
+function statusLayout() {
+  const step=Math.min(44,Math.floor(204/statuses.length));
+  const bodyY=65+statuses.length*step+2;
+  return {step,bodyY,bodyHeight:314-bodyY};
+}
+
+function renderStatusEditor() {
+  $('statusRows').replaceChildren(); $('statusHotspots').replaceChildren();
+  const {step,bodyY,bodyHeight}=statusLayout();
+  statuses.forEach((status,i)=>{
+    const row=document.createElement('div'); row.className='status-row-editor';
+    row.innerHTML=`<div class="field-row"><span>상태 ${i+1}</span><button type="button" class="text-button" data-status-remove="${i}" aria-label="상태 ${i+1} 삭제">삭제</button></div><div class="status-fields"><label>상태명<input type="text" id="statusName${i}" data-status-index="${i}" data-status-property="name" maxlength="24"></label></div>`;
+    row.querySelector('[data-status-property="name"]').value=status.name;
+    row.querySelector('button').disabled=statuses.length===1;
+    $('statusRows').append(row);
+    for(const [field,x,width,label] of [['Name',1078,283,'상태명']]) {
+      const button=document.createElement('button'); button.type='button';
+      button.dataset.section='sequenceSection'; button.dataset.focus=`status${field}${i}`;
+      button.style.cssText=`--x:${x/W*100}%;--y:${(65+i*step)/H*100}%;--w:${width/W*100}%;--h:${(step-6)/H*100}%`;
+      button.setAttribute('aria-label',`상태 ${i+1} ${label} 편집`);
+      const caption=document.createElement('span');caption.textContent=`상태 ${i+1} ${label}`;button.append(caption);
+      $('statusHotspots').append(button);
+    }
+  });
+  $('statusCount').value=`${statuses.length} / 6`;
+  $('addStatus').disabled=statuses.length===6;
+  const bodyHotspot=document.querySelector('[data-focus="infoBody"]');
+  bodyHotspot.style.setProperty('--y',`${bodyY/H*100}%`);
+  bodyHotspot.style.setProperty('--h',`${bodyHeight/H*100}%`);
+}
+
+$('addStatus').onclick=()=>{
+  if(statuses.length>=6)return;
+  statuses.push({name:''});renderStatusEditor();selectPage(editorPage);
+  $(`statusName${statuses.length-1}`).focus();
+};
+$('statusRows').addEventListener('click',event=>{
+  const button=event.target.closest('[data-status-remove]');
+  if(!button||statuses.length<=1)return;
+  statuses.splice(Number(button.dataset.statusRemove),1);renderStatusEditor();selectPage(editorPage);
+});
 
 function syncForm() {
   document.querySelectorAll('[data-config]').forEach(input => {
@@ -341,8 +431,13 @@ $('settings').addEventListener('input', event => {
   const input = event.target;
   if (input.dataset.config) {
     config[input.dataset.config] = input.type === 'checkbox' ? input.checked : input.hasAttribute('data-number') ? Number(input.value) : input.value;
+    if(['infoLevel','infoExperience'].includes(input.dataset.config)&&input.value!=='') {
+      config[input.dataset.config]=String(Math.max(0,Math.min(999,Math.round(Number(input.value)||0))));input.value=config[input.dataset.config];
+    }
     if(input.dataset.config==='duration') config.duration=Math.max(6,Math.min(120,config.duration || 12));
     time = Math.min(time, config.duration); $('storySizeValue').value = `${config.storySize} px`;
+  } else if (input.dataset.statusIndex !== undefined) {
+    statuses[Number(input.dataset.statusIndex)].name=input.value;
   } else if (input.dataset.stat) {
     const value = input.value === '' ? '' : String(Math.max(0, Math.min(99, Math.round(Number(input.value) || 0))));
     stats[input.dataset.stat] = value; input.value = value;
@@ -358,8 +453,8 @@ $('settings').addEventListener('input', event => {
 });
 
 function clearPicture(key) {
-  Object.assign(pictures[key], {image: null, rendered: null, zoom: 1, x: .5, y: .5});
-  document.querySelectorAll(`[data-image="${key}"]`).forEach(input => {input.value = input.dataset.property === 'zoom' ? 1 : .5;});
+  Object.assign(pictures[key], {image: null, rendered: null, zoom: 1, x: .5, y: .5, brightness: 0});
+  document.querySelectorAll(`[data-image="${key}"]`).forEach(input => {input.value = pictures[key][input.dataset.property];});
   document.querySelector(`[data-tools="${key}"]`).hidden = true;
   $(`${key}Upload`).value = '';
   $(`${key}FileName`).textContent = key === 'scene' ? '이미지 선택' : '인물 이미지 선택';
@@ -389,7 +484,9 @@ $('regionsToggle').onclick = () => {
   const shown = $('hotspots').classList.toggle('show');
   $('regionsToggle').setAttribute('aria-pressed', String(shown));
 };
-document.querySelectorAll('[data-section]').forEach(button => button.addEventListener('click', () => {
+$('hotspots').addEventListener('click', event => {
+  const button=event.target.closest('[data-section]');
+  if(!button)return;
   if (busy) return;
   playing=false;lastTick=0;
   if (button.dataset.section==='storySection' || button.dataset.section==='imageSection') {
@@ -400,7 +497,7 @@ document.querySelectorAll('[data-section]').forEach(button => button.addEventLis
   const input = $(button.dataset.focus);
   input.scrollIntoView({behavior: 'auto', block: 'nearest'});
   input.focus({preventScroll: true});
-}));
+});
 $('fullscreen').onclick = async () => {
   try {if (document.fullscreenElement) await document.exitFullscreen(); else await $('previewShell').requestFullscreen();}
   catch {notify('이 브라우저에서는 전체 화면을 사용할 수 없어요.', true);}
@@ -409,8 +506,9 @@ $('play').onclick = () => {playing = !playing; if (time >= config.duration) time
 $('scrub').oninput = () => {playing = false; time = Number($('scrub').value); syncTime(); draw();};
 $('reset').onclick = () => {
   if (!confirm('문구, 이미지, 스탯을 처음 상태로 되돌릴까요?')) return;
+  statuses=defaultStatuses();renderStatusEditor();
   Object.assign(config, defaults); Object.keys(stats).forEach(key => {stats[key] = '';});
-  editorPage=0;pages=[newPage(),newPage()];pictures.scene=pages[0].picture;
+  editorPage=0;pages=[newPage(),newPage(),newPage()];pictures.scene=pages[0].picture;
   selectPage(0,false);
   Object.keys(pictures).forEach(clearPicture); playing = false; time = 0; syncForm(); draw(); notify('처음 상태로 되돌렸어요.');
 };
@@ -516,7 +614,12 @@ $('video').onclick = () => exportScene(async () => {
 });
 
 function tick(stamp) {
-  if (playing && !busy && ready) {
+  if (navigation) {
+    const elapsed=(stamp-navigation.start)/1000;
+    time=navigation.boundary-.16+Math.min(.32,elapsed);
+    if (elapsed>=.32) {navigation=null;lock(false);}
+    draw(); syncTime();
+  } else if (playing && !busy && ready) {
     if (lastTick) time = (time + (stamp - lastTick) / 1000) % config.duration;
     draw(); syncTime();
   }
@@ -524,11 +627,50 @@ function tick(stamp) {
 }
 
 (async () => {
+  renderStatusEditor();
   selectPage(0,false);lock(true); syncForm();
   try {
     const assets = window.HorrorAssets;
-    [frame, selectionFrame] = await Promise.all([loadImage(assets.frame), loadImage(assets.selection), document.fonts.load('22px Pixel', '한글 ABC')]);
+    [frame, selectionFrame, portraitFrame] = await Promise.all([loadImage(assets.frame), loadImage(assets.selection), loadImage(assets.portraitFrame), document.fonts.load('22px Pixel', '한글 ABC')]);
     await document.fonts.ready;
+    const ornament=document.createElement('canvas'); ornament.width=184; ornament.height=276;
+    const ornamentContext=ornament.getContext('2d');
+    ornamentContext.fillStyle='#fff'; ornamentContext.fillRect(0,0,184,276);
+    ornamentContext.drawImage(portraitFrame,350,270,3300,3480,0,0,184,276);
+    const ornamentPixels=ornamentContext.getImageData(0,0,184,276);
+    for(let i=0;i<ornamentPixels.data.length;i+=4) {
+      const ink=ornamentPixels.data[i]<160 ? 0 : 255;
+      ornamentPixels.data[i]=ornamentPixels.data[i+1]=ornamentPixels.data[i+2]=ink;
+    }
+    ornamentContext.putImageData(ornamentPixels,0,0); portraitFrame=ornament;
+    portraitClip=new Path2D();
+    const innerRows=[];
+    for(let y=12;y<268;y++) {
+      const black=x=>ornamentPixels.data[(y*184+x)*4]===0;
+      let left=-1,right=184,leftWidth=0,rightWidth=0;
+      for(let x=0;x<184;) {
+        if(!black(x)) {x++;continue;}
+        const start=x;
+        while(x<184&&black(x)) x++;
+        const width=x-start;
+        if(x<=92&&width>leftWidth) {left=x;leftWidth=width;}
+        if(start>=92&&width>rightWidth) {right=start-1;rightWidth=width;}
+      }
+      if(left>=0&&right<184&&left<=right) innerRows.push({y,left,right});
+    }
+    for(let i=0;i<innerRows.length-1;i++) {
+      const a=innerRows[i],b=innerRows[i+1];
+      for(let y=a.y;y<b.y;y++) {
+        const mix=(y-a.y)/(b.y-a.y);
+        const left=Math.round(a.left+(b.left-a.left)*mix),right=Math.round(a.right+(b.right-a.right)*mix);
+        for(let x=left;x<=right;) {
+          if(ornamentPixels.data[(y*184+x)*4]===0) {x++;continue;}
+          const start=x;
+          while(x<=right&&ornamentPixels.data[(y*184+x)*4]!==0) x++;
+          portraitClip.rect(start,y,x-start,1);
+        }
+      }
+    }
     ctx.drawImage(frame, 0, 0);
     const darkPixel = [0, 0, 0];
     const lightPixel = [255, 255, 255];
