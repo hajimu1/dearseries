@@ -741,6 +741,15 @@ function tick(stamp) {
         }
       }
     }
+    // Carry the opening down to the first bottom bone pixel in each column.
+    for(let x=0;x<184;x++) {
+      if(!portraitAccentMask[240*184+x])continue;
+      let bottom=241;
+      while(bottom<276&&ornamentPixels.data[(bottom*184+x)*4]!==0)bottom++;
+      if(bottom===276)continue;
+      portraitClip.rect(x,241,1,bottom-241);
+      for(let y=241;y<bottom;y++)portraitAccentMask[y*184+x]=1;
+    }
     ctx.drawImage(frame, 0, 0);
     const darkPixel = [0, 0, 0];
     const lightPixel = [255, 255, 255];
