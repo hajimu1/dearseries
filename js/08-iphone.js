@@ -1,6 +1,6 @@
 'use strict';
 const $=id=>document.getElementById(id),canvas=$('scene'),ctx=canvas.getContext('2d'),W=1300,H=1024,phoneWidth=480,phoneHeight=960,phoneTop=32;
-const defaults={timeText:'9:41',dateText:'10월 13일 화요일',appLabel:'메시지',nowText:'지금',wallpaper:'sunset',backgroundColor:'#e9e9ef',battery:100,arrivalGap:1.8,hold:2.4,deleteSpeed:1,gifWidth:720,loop:true};
+const defaults={timeText:'9:41',dateText:'10월 13일 화요일',appLabel:'메시지',nowText:'지금',wallpaper:'sunset',backgroundColor:'#e9e9ef',battery:100,arrivalGap:1.8,hold:2.4,deleteSpeed:1,deleteMode:'individual',gifWidth:720,loop:true};
 const config={...defaults};
 for(const kind of ['wallpaper','outside'])Object.assign(defaults,{[kind+'X']:.5,[kind+'Y']:.5,[kind+'Zoom']:1,[kind+'Blur']:0});
 defaults.vhsOpacity=0;Object.assign(config,defaults);
@@ -17,7 +17,7 @@ function positionAlertControls(){
 new ResizeObserver(positionAlertControls).observe(canvas);
 function resetAlerts(){clearAt=null;clearCount=null;}
 $('clearAlerts').onclick=()=>{if(busy)return;clearAt=time;clearCount=messages.filter((_,i)=>time>=arrival(i)).length;playing=true;lastTick=0;syncTime();draw();};
-function duration(){config.duration=1+(messages.length-1)*config.arrivalGap+config.hold+messages.length/config.deleteSpeed+.8;$('scrub').max=config.duration;}
+function duration(){config.duration=1+(messages.length-1)*config.arrivalGap+config.hold+(config.deleteMode==='all'?1:messages.length)/config.deleteSpeed+.8;$('scrub').max=config.duration;}
 function notify(text){$('notice').textContent=text;}
 function syncTime(){$('scrub').value=time;$('clock').textContent=`${time.toFixed(1)} / ${config.duration.toFixed(1)} s`;$('play').textContent=playing?'Ⅱ':'▶';}
 const clamp=v=>Math.max(0,Math.min(1,v)),ease=v=>1-Math.pow(1-clamp(v),3);
@@ -49,7 +49,8 @@ function closeStart(){return clearAt??arrival(messages.length-1)+config.hold;}
 function deletion(index,t){
   const count=clearCount??messages.length;
   if(index>=count)return {offset:460,expand:1,finish:1,settle:1};
-  const elapsed=(t-closeStart())*config.deleteSpeed-(count-1-index);
+  const elapsed=(t-closeStart())*config.deleteSpeed-(config.deleteMode==='all'?0:count-1-index);
+  if(config.deleteMode==='all')return {offset:0,expand:0,finish:ease((elapsed-.56)/.24),settle:0};
   const reveal=ease(elapsed/.3),expand=ease((elapsed-.32)/.24),finish=ease((elapsed-.56)/.24);
   return {offset:260*reveal+200*finish,expand,finish,settle:ease((elapsed-.8)/.18)};
 }
@@ -78,7 +79,13 @@ function draw(t=time){
   if(arrived>0){
     ctx.save();ctx.globalAlpha=1-deletion(0,t).finish;
     text('알림 센터',45,274,23,'white',400);
-    box(405,271,30,30,15,'#ffffffb8');ctx.strokeStyle='#292b30';ctx.lineWidth=1.8;ctx.beginPath();ctx.moveTo(415,281);ctx.lineTo(425,291);ctx.moveTo(425,281);ctx.lineTo(415,291);ctx.stroke();ctx.restore();
+    const clearPhase=(t-closeStart())*config.deleteSpeed;
+    if(config.deleteMode==='all'&&clearPhase>=.15){
+      box(363,271,72,30,15,clearPhase>=.5?'#ffffffed':'#ffffffb8');text('지우기',399,278,15,'#292b30',400,'center');
+    }else{
+      box(405,271,30,30,15,config.deleteMode==='all'&&clearPhase>=0?'#ffffffed':'#ffffffb8');ctx.strokeStyle='#292b30';ctx.lineWidth=1.8;ctx.beginPath();ctx.moveTo(415,281);ctx.lineTo(425,291);ctx.moveTo(425,281);ctx.lineTo(415,291);ctx.stroke();
+    }
+    ctx.restore();
   }
   positionAlertControls();
   for(let i=0;i<messages.length;i++){
