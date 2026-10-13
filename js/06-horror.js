@@ -26,7 +26,7 @@ let navigation = null, manualPointer = null;
 const nextButton = {x:574, y:720, w:44, h:48};
 const actionButtons = {back:{x:36,y:813,w:147,h:53}, investigate:{x:654,y:726,w:397,h:122,inset:0}};
 let pages = [newPage(), newPage(), newPage()];
-let frame, selectionFrame, portraitFrame, portraitClip, dark = '#000000', light = '#ffffff', palette;
+let frame, selectionFrame, portraitFrame, portraitClip, portraitAccentMask, dark = '#000000', light = '#ffffff', palette;
 let ready = false, playing = false, busy = false, cancelled = false, time = 0, lastTick = 0;
 
 function notify(message, error = false) {
@@ -110,6 +110,14 @@ const scenePalettes={
   crimson:['#211d29','#71a2a7','#b33356',true],
   green:['#20382e','#c4d4a3','#82aa81',false]
 };
+for(const entry of window.HorrorExtraPalettes || []) {
+  scenePalettes[entry.id]=entry.colors;
+  const start=Math.floor((entry.number-1)/10)*10+1;
+  const groupId=`palette-group-${start}`;
+  let group=$(groupId);
+  if(!group) {group=document.createElement('optgroup');group.id=groupId;group.label=`World of Horror ${start}–${Math.min(start+9,73)}`;$('palettePreset').append(group);}
+  group.append(new Option(`${String(entry.number).padStart(2,'0')} · ${entry.name}`,entry.id));
+}
 let paletteCacheKey='',paletteLookup,paletteAccentLookup;
 function applyScenePalette() {
   const {paletteInk:ink,palettePaper:paper,paletteAccent:accent,paletteUseAccent:useAccent}=config;
@@ -129,7 +137,7 @@ function applyScenePalette() {
     const spans=useAccent?regions.filter(a=>y>=a.y&&y<a.y+a.h):[];
     for(let x=0;x<W;x++) {
       const i=(y*W+x)*4,v=data[i]*3;
-      const lut=spans.some(a=>x>=a.x&&x<a.x+a.w)?paletteAccentLookup:paletteLookup;
+      const lut=spans.some(a=>x>=a.x&&x<a.x+a.w&&(a!==imageAreas.portrait||portraitAccentMask[(y-a.y)*a.w+x-a.x]))?paletteAccentLookup:paletteLookup;
       data[i]=lut[v];data[i+1]=lut[v+1];data[i+2]=lut[v+2];
     }
   }
@@ -704,6 +712,7 @@ function tick(stamp) {
     }
     ornamentContext.putImageData(ornamentPixels,0,0); portraitFrame=ornament;
     portraitClip=new Path2D();
+    portraitAccentMask=new Uint8Array(184*276);
     const innerRows=[];
     for(let y=12;y<268;y++) {
       const black=x=>ornamentPixels.data[(y*184+x)*4]===0;
@@ -728,6 +737,7 @@ function tick(stamp) {
           const start=x;
           while(x<=right&&ornamentPixels.data[(y*184+x)*4]!==0) x++;
           portraitClip.rect(start,y,x-start,1);
+          portraitAccentMask.fill(1,y*184+start,y*184+x);
         }
       }
     }
