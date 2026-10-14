@@ -1,0 +1,5 @@
+Additional receipt fonts supplied by the user, downloaded 2026-10-15.
+DOSMyungjo: https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_eight@1.0/DOSMyungjo.woff
+KkakdugiDrafting (200, 300, 400, 700): https://github.com/Project-Noonnu/2610102356/tree/kkakdugidrafting-extralight/kkakdugidrafting-extralight
+Covendard (400, 700): https://github.com/Project-Noonnu/2610081905/tree/covendard/covendard
+Gulim: uses installed system font; no system font files redistributed.

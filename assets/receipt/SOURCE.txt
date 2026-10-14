@@ -1,0 +1,8 @@
+Source: user-supplied paper.zip / 18.jpg
+Original image unchanged (3204 x 4484). Proportional clipping in theme 09.
+
+2026-10-14 additions: center crop, 768 x 1536 max, neutral grayscale, softened contrast.
+fibers: 107_paper_texture.jpg
+grain: 118_paper_texture.jpg
+linen: PAPER_03.jpg
+folded: PensKit-Texture-3.jpg

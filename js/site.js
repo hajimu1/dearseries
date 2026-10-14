@@ -12,15 +12,22 @@ function notice(text, temporary = false) {
   if (temporary) noticeTimer = setTimeout(() => {status.hidden = true;}, 3500);
 }
 function activate(id) {
-  if (!ids.includes(id)) return;
+  if (id!=='home'&&!ids.includes(id)) return;
   pending = null;
   for (const [key, frame] of frames) {frame.hidden = key !== id; send(frame, {kind: 'active', value: key === id});}
   active = id;
+  document.getElementById('home').hidden=id!=='home';document.querySelector('nav').hidden=id==='home';
+  if(id==='home'){
+   document.getElementById('home').scrollTop=0;
+   document.body.dataset.scene='home';document.title='Dear Series · Archive';
+   tabs.forEach(tab=>{tab.setAttribute('aria-selected','false');tab.tabIndex=0;});notice('');
+   if(location.hash!=='#home')history.replaceState(null,'','#home');return;
+  }
   if (!frames.has(id)) {
     const frame = document.createElement('iframe');
     frame.id = `frame-${id}`; frame.title = tabs[ids.indexOf(id)].querySelector('b').textContent + ' 편집기';
     frame.className = 'scene-frame'; frame.setAttribute('role', 'tabpanel'); frame.setAttribute('aria-labelledby', `tab-${id}`);
-    frame.allow = 'fullscreen'; frame.src = `scenes/${id}.html`;
+    frame.allow = 'fullscreen'; frame.src = `scenes/${id}.html${id === '09-receipt' ? '?v=20261015-receipt-justify-default-25' : ''}`;
     frames.set(id, frame); document.getElementById('scenes').append(frame);
     notice('장면을 불러오는 중…');
   } else notice(frames.get(id).dataset.ready ? '' : '장면을 불러오는 중…');
@@ -31,7 +38,7 @@ function activate(id) {
   if (location.hash !== '#' + id) history.replaceState(null, '', '#' + id);
 }
 function requestScene(id) {
-  if (!ids.includes(id) || id === active) return;
+  if ((id!=='home'&&!ids.includes(id)) || id === active) return;
   if (!active || !frames.get(active)?.dataset.ready) {activate(id); return;}
   pending = {id, token: ++requestNumber};
   send(frames.get(active), {kind: 'can-leave', token: pending.token});
@@ -60,6 +67,22 @@ tabs.forEach((tab, index) => {
     event.preventDefault(); tabs[next].focus(); requestScene(ids[next]);
   };
 });
-window.addEventListener('hashchange', () => requestScene(location.hash.slice(1)));
+window.addEventListener('hashchange', () => requestScene(ids.includes(location.hash.slice(1))?location.hash.slice(1):'home'));
 window.addEventListener('resize', () => tabs[ids.indexOf(active)]?.scrollIntoView({block: 'nearest', inline: 'nearest'}));
-activate(ids.includes(location.hash.slice(1)) ? location.hash.slice(1) : ids[0]);
+document.querySelectorAll('header a[href="#home"]').forEach(link=>link.onclick=event=>{event.preventDefault();requestScene('home');});
+[...tabs.keys()].reverse().forEach(i=>{
+ const tab=tabs[i],card=document.createElement('a');card.href=tab.hash;card.className='template-card';card.dataset.category=i===8?'static':'motion';
+ const number=document.createElement('span');number.className='template-number';number.textContent=String(i+1).padStart(2,'0');
+ const name=document.createElement('h3');name.textContent=tab.querySelector('b').textContent;
+ const action=document.createElement('span');action.className='template-action';action.textContent=i===8?'정적 이미지':'이미지 · 모션';
+ card.append(number,name,action);card.onclick=event=>{event.preventDefault();requestScene(ids[i]);};document.getElementById('templateGrid').append(card);
+});
+document.querySelectorAll('[data-filter]').forEach(button=>button.onclick=()=>{
+ const filter=button.dataset.filter;let count=0;
+ document.querySelectorAll('[data-filter]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
+ document.querySelectorAll('.template-card').forEach(card=>{card.hidden=filter!=='all'&&card.dataset.category!==filter;if(!card.hidden)count++;});
+ document.getElementById('entryCount').textContent=`${count} RECORD${count===1?'':'S'}`;
+ document.getElementById('collectionTitle').textContent=filter==='all'?'ALL ENTRIES':filter==='static'?'PAPER & PRINT':'SCREEN & MOTION';
+});
+document.getElementById('backToTop').onclick=event=>{event.preventDefault();document.getElementById('home').scrollTo({top:0,behavior:'smooth'});};
+activate(ids.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'home');
