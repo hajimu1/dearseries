@@ -79,7 +79,7 @@ function rebuild(){
  commands.push({kind:'barcode',y,width:190,height:44});y+=49;
  for(const value of barcodeRows){commands.push({kind:'text',value,x:225,y,size:12,align:'center',spread:190});y+=lineHeight(12);}
  y+=28*config.blockSpacing;renderEntries(footerBlocks);y+=36;
- paperHeight=Math.ceil(Math.max(830,y));syncExport();H=Math.max(1000,paperHeight+120);if(canvas.height!==H)canvas.height=H;config.duration=paperHeight/config.speed+5.5;$('scrub').max=config.duration;time%=config.duration;
+ paperHeight=Math.ceil(Math.max(720,y));syncExport();H=Math.max(1000,paperHeight+120);if(canvas.height!==H)canvas.height=H;config.duration=paperHeight/config.speed+5.5;$('scrub').max=config.duration;time%=config.duration;
  for(const mode of ['sentence','list','note'])$(mode+'Fields').hidden=config.mode!==mode;
  document.querySelectorAll('[data-paper]').forEach(button=>button.setAttribute('aria-pressed',button.dataset.paper===config.paperColor));syncTime();draw();
 }

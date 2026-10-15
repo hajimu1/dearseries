@@ -27,7 +27,7 @@ function activate(id) {
     const frame = document.createElement('iframe');
     frame.id = `frame-${id}`; frame.title = tabs[ids.indexOf(id)].querySelector('b').textContent + ' 편집기';
     frame.className = 'scene-frame'; frame.setAttribute('role', 'tabpanel'); frame.setAttribute('aria-labelledby', `tab-${id}`);
-    frame.allow = 'fullscreen'; frame.src = `scenes/${id}.html${id === '09-receipt' ? '?v=20261015-receipt-justify-default-25' : ''}`;
+    frame.allow = 'fullscreen'; frame.src = `scenes/${id}.html?v=20261015-ticket-ticket-route-bleed-23`;
     frames.set(id, frame); document.getElementById('scenes').append(frame);
     notice('장면을 불러오는 중…');
   } else notice(frames.get(id).dataset.ready ? '' : '장면을 불러오는 중…');
@@ -71,10 +71,10 @@ window.addEventListener('hashchange', () => requestScene(ids.includes(location.h
 window.addEventListener('resize', () => tabs[ids.indexOf(active)]?.scrollIntoView({block: 'nearest', inline: 'nearest'}));
 document.querySelectorAll('header a[href="#home"]').forEach(link=>link.onclick=event=>{event.preventDefault();requestScene('home');});
 [...tabs.keys()].reverse().forEach(i=>{
- const tab=tabs[i],card=document.createElement('a');card.href=tab.hash;card.className='template-card';card.dataset.category=i===8?'static':'motion';
+ const tab=tabs[i],card=document.createElement('a');card.href=tab.hash;card.className='template-card';card.dataset.category=tab.dataset.kind||'motion';
  const number=document.createElement('span');number.className='template-number';number.textContent=String(i+1).padStart(2,'0');
  const name=document.createElement('h3');name.textContent=tab.querySelector('b').textContent;
- const action=document.createElement('span');action.className='template-action';action.textContent=i===8?'정적 이미지':'이미지 · 모션';
+ const action=document.createElement('span');action.className='template-action';action.textContent=card.dataset.category==='static'?'정적 이미지':'이미지 · 모션';
  card.append(number,name,action);card.onclick=event=>{event.preventDefault();requestScene(ids[i]);};document.getElementById('templateGrid').append(card);
 });
 document.querySelectorAll('[data-filter]').forEach(button=>button.onclick=()=>{
