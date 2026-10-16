@@ -1,0 +1,6 @@
+Built-in image_gen; product-mockup, 2026-10-16.
+Straight-on photograph of a thin flexible clear PVC vertical name badge sleeve on transparent background. Rounded double heat-welded edges, two round holes, central hanging slot, horizontal zip seam, polished silver swivel clasp and ivory woven strap. Empty transparent insert area, subtle milky reflections and scratches, no text or logo. Draw over an editable paper card.
+Original generated asset: exec-a3808b5a-0a63-4839-8430-5816a0d4813f.png (preserved without modification).
+Reflection texture: user supplied D:/Win10/Desktop/Jisu/2 Photoshop/5 texture/2 surfacetexture/synthetic_metal/Sheet Reflection 4.png (copied unchanged; screen blending in renderer).
+
+2026-10-16: Replaced the active reflection map with reflection-smooth.png, generated with built-in image_gen. Smooth broad specular reflections for flat thin PVC, no crumpled-film wrinkles. Original supplied reflection.png preserved. Prompt: reflection-smooth-prompt.txt.
