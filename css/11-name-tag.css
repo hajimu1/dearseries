@@ -9,3 +9,7 @@
 #stage{position:relative;isolation:isolate;gap:var(--face-gap,40px)}#stage #stageBackground{position:absolute;inset:0;width:100%;height:100%;max-width:none;max-height:none;object-fit:cover;pointer-events:none;z-index:-1;outline:0}#stage canvas:not(#stageBackground){max-width:calc((100% - var(--face-gap,40px))/2)}
 
 nav{position:sticky;top:0;z-index:2;background:#f6f4ec;padding:12px 8px}aside>.side-switch{margin:0;padding:12px 12px 0;gap:6px}aside>.side-switch button{justify-self:stretch}.panel h3{font:600 14px Scene;letter-spacing:0;margin:10px 0 20px}#panel-save footer{display:grid;gap:12px;font:12px Scene;letter-spacing:0}#panel-save footer>span{color:#7d8276}#panel-save button{width:100%;padding:14px}header{margin-bottom:14px}@media(max-width:800px){.preview{padding-left:8px;padding-right:8px}}
+
+#exportArea{position:relative;isolation:isolate;display:flex;flex:none;align-items:center;outline:1px solid rgba(45,53,46,.65);box-shadow:0 0 0 1px rgba(255,255,255,.65)}
+#stage #exportArea>canvas:not(#stageBackground){width:calc((100% - var(--face-gap,40px))/2);height:100%;max-width:none;max-height:none;flex:1;min-width:0;object-fit:fill}
+#exportGuide{position:absolute;top:5px;left:6px;z-index:1;padding:3px 6px;background:rgba(246,244,236,.86);color:#495145;font:10px Scene,sans-serif;pointer-events:none}
