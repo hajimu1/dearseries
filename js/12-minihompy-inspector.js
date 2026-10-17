@@ -30,6 +30,9 @@
   heading('profile','프로필 사진');moveImage('profile','profile','profileUpload');
   function fitControl(panel,key){const label=document.createElement('label'),select=$('roomFit').cloneNode(true);select.id=key+'Fit';select.dataset.key=key+'Fit';label.htmlFor=select.id;label.textContent='이미지 맞춤';sections.get(panel).append(label,select);}
   fitControl('profile','profile');for(const key of ['profileX','profileY','profileZoom'])moveField('profile',key);heading('profile','오늘의 기분 · 소개');['mood','intro','name','birthday','email','buddies'].forEach(key=>moveField('profile',key));
+  const introAlignLabel=document.createElement('label'),introAlign=document.createElement('select');introAlignLabel.htmlFor='introAlign';introAlignLabel.textContent='소개글 정렬';introAlign.id='introAlign';introAlign.dataset.key='introAlign';
+  for(const [value,label] of [['left','왼쪽 정렬'],['center','가운데 정렬'],['right','오른쪽 정렬']])introAlign.add(new Option(label,value));
+  sections.get('profile').append(introAlignLabel,introAlign);
   moveControl('posts','editPage');sections.get('posts').append($('fields-page'),$('photo-upload-field'),$('visitor-upload-fields'));
   const photoFitHost=document.createElement('div');fitControl('posts','photo');photoFitHost.append(document.querySelector('label[for="photoFit"]'),$('photoFit'));$('photo-upload-field').append(photoFitHost,...['photoX','photoY','photoZoom'].map(key=>$('edit-'+key).parentElement));
   heading('skin','배경 방식');moveControl('skin','backgroundMode');

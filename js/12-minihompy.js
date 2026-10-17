@@ -14,7 +14,7 @@
     photoTitle:'테스트문구 15', photoDate:'2006.05.24', photoCaption:'테스트문구 16\n테스트문구 17', photoComments:'3', photoScraps:'0',
     boardLines:'테스트문구 18\n테스트문구 19\n테스트문구 20\n테스트문구 21\n테스트문구 22', boardDates:'05.24\n05.24\n05.24\n05.24\n05.24',
     bgmName:'기억을 걷는 시간', bgmColor:'#789b74', utilityText:'테스트문구 24', frameColor:'#afd1d8', titleColor:'#d4a7c1', tabColor:'#318da5', backgroundColor:'#d4d7d5',
-    showUtility:false, showSide:true, backgroundMode:'solid', menuLanguage:'en', hompyFont:'Dotum', bgmPosition:0, profileFit:'cover', roomFit:'cover', photoFit:'cover', skinFit:'cover',
+    showUtility:false, showSide:true, backgroundMode:'solid', menuLanguage:'en', hompyFont:'Dotum', introAlign:'left', bgmPosition:0, profileFit:'cover', roomFit:'cover', photoFit:'cover', skinFit:'cover',
     profileX:50,profileY:50,profileZoom:100,roomX:50,roomY:50,roomZoom:100,photoX:50,photoY:50,photoZoom:100,skinX:50,skinY:100,skinZoom:100,
     calendarDate:'2006-05-24',diary0date:'2006-05-24',diary0weather:'맑음',diary0text:'테스트문구 25',diary0comments:'2',diary0scraps:'0',
     diary1date:'2006-05-21',diary1weather:'흐림',diary1text:'테스트문구 26',diary1comments:'2',diary1scraps:'0',
@@ -159,6 +159,7 @@
     const assign=(selector,value)=>{document.querySelector(selector).textContent=value;};
     assign('.hompy-title h1',state.title);assign('.domain',state.domain);assign('.counter b',state.today);assign('.counter em',state.total);
     assign('.mood span',state.mood);assign('.introduction',state.intro);assign('.owner b',state.name);assign('.owner small',state.birthday);assign('.mail',state.email);
+    document.querySelector('.introduction').style.textAlign=state.introAlign;
     document.querySelector('.owner>span').hidden=true;document.querySelector('.mail').hidden=!state.email;
     const buddy=document.getElementById('buddy'),selected=buddy.value;
     buddy.replaceChildren(...state.buddies.split('\n').filter(Boolean).map(value=>new Option(value,value)));if([...buddy.options].some(option=>option.value===selected))buddy.value=selected;
