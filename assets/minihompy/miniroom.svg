@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="490" height="225" viewBox="0 0 490 225" shape-rendering="crispEdges">
+<!-- Static sample illustration; the editor replaces this entire image on upload. -->
+<rect width="490" height="225" fill="#f4f5ef"/><path d="M78 146 245 65 413 146 245 223Z" fill="#d9bb9b" stroke="#a9917f"/>
+<path d="M78 146V48L245 5V65Z" fill="#dfebe6" stroke="#a4b9af"/><path d="M245 5 413 48V146L245 65Z" fill="#edf1e8" stroke="#a4b9af"/>
+<path d="m99 156 166-82m-145 92 166-82m-144 93 165-82m-144 92 166-82m-144 92 165-82m-144 92 165-82m-144 92 165-82" fill="none" stroke="#c9a78c"/>
+<path d="M123 53 186 36V98L123 124Z" fill="#fff" stroke="#9eaea8" stroke-width="3"/><path d="m130 58 49-14v48l-49 21Z" fill="#b8dce4"/>
+<path d="m155 51 0 52m-25-23 49-17" stroke="#fff" stroke-width="3"/><path d="m116 52 11-3v72l-11 4Zm68-19 11-3v72l-11 4Z" fill="#b5c9b9"/>
+<path d="m307 44 36 10v32l-36-11Z" fill="#bcaa87" stroke="#9e967e" stroke-width="2"/><path d="m312 50 26 7v21l-26-8Z" fill="#f7f4df"/><path d="m317 68 8-11 12 17Z" fill="#a9c1a4"/>
+<path d="m276 129 55-26 35 17-55 28Z" fill="#f1e4d4" stroke="#bda688"/><path d="m276 129v24l35 18v-23m0 23 55-28v-23" fill="#c2ab8d" stroke="#a38c75"/>
+<path d="m281 111 45-23 6 15-51 25Z" fill="#c9d0b9" stroke="#a5b09a"/><path d="m281 128 45-22 29 14-45 22Z" fill="#e4e7d8"/>
+<path d="m160 155 61-29 52 26-62 32Z" fill="#adbec0"/><path d="m169 155 52-25 43 22-53 27Z" fill="#c9d6d4"/>
+<path d="m181 147 32-16 27 13-32 17Z" fill="#e4d3b6" stroke="#af997f"/><path d="m181 147v15l27 16v-17m0 17 32-17v-17" fill="#c4ae8e" stroke="#af997f"/>
+<path d="m195 142 10-5 10 5-10 5Z" fill="#fff"/><path d="m201 136v-6h7v10" fill="#e1eff0" stroke="#99b2b2"/>
+<path d="m358 106 14-6 14 6-14 8Z" fill="#ab9c82"/><path d="m358 106 3 22 11 6 11-6 3-22" fill="#c8b292" stroke="#aa9377"/><path d="M371 107V71m0 18-13-9m14 16 11-13" fill="none" stroke="#728b65" stroke-width="3"/><path d="m357 67 16 6-8 14-12-8Zm21-9 10 10-13 13-5-13Zm8 19 10 8-15 10-6-11Z" fill="#92ac80"/>
+<g transform="translate(257 159)"><path d="M0 9h8V3h17v6h7v20h-5v5H5v-5H0Z" fill="#5c514d"/><path d="M6 12h21v16H6Z" fill="#f1d8bc"/><path d="M6 7h6V3h12v8H6Z" fill="#5c514d"/><path d="M10 17h2v3h-2m11-3h2v3h-2" fill="#4b4542"/><path d="M12 25h8v2h-8" fill="#ba7d72"/><path d="M8 34h18v18H8Z" fill="#8aaebb"/><path d="M4 36h4v13H4m22-13h4v13h-4" fill="#f1d8bc"/><path d="M10 52h6v9h-8v-4h2m10-5h6v9h-8v-4h2" fill="#665e59"/></g>
+<path d="m230 127 9 4 6-4-2-7-7-1-5 3Z" fill="#fff" stroke="#c9c9c2"/><text x="245" y="121" font-family="sans-serif" font-size="8" fill="#788c85">hello ♡</text>
+</svg>

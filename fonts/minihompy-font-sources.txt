@@ -1,0 +1,6 @@
+Mona font (Mona10x12, Mona12)
+https://cdn.jsdelivr.net/gh/MonadABXY/mona-font/web/mona.css
+
+DanpungSaemmul (MapleSaemmul.woff2)
+https://cdn.jsdelivr.net/gh/Project-Noonnu/2609272011@maplesaemmul/maplesaemmul/MapleSaemmul.woff2
+

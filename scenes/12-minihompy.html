@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ko">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>클래식 미니홈피 · Dear Series</title><link rel="stylesheet" href="../css/12-minihompy.css?v=bgm-gap-97"></head>
+<body>
+<div class="editor-layout"><div class="viewport"><div class="hompy">
+  <header class="utility"><span><strong>mini hompy</strong>　지수님의 미니홈피</span><span>일촌과 함께하는 우리들의 작은 세상 <span class="utility-divider">│</span> since 2005</span></header>
+  <div class="hompy-body">
+    <div class="skin-art" aria-label="전체 스킨 배경"><img id="skinImage" alt="미니홈피 전체 스킨"></div>
+    <main class="book" aria-label="지수의 미니홈피">
+      <div class="stitch" aria-hidden="true"></div>
+      <div class="book-inner">
+        <div class="counter">TODAY <b>24</b><span>│</span>TOTAL <em>12,486</em></div>
+        <header class="hompy-title"><h1>작고 소중한 나의 하루들 ˚。♡</h1><span class="domain">https://www.cyworld.com/dear_jisu</span></header>
+        <aside class="profile-page" aria-label="고정 프로필">
+          <div class="mood"><b>TODAY IS..</b> <span>♡ 행복</span></div>
+          <div class="profile-image"><img id="profileImage" alt="프로필 사진"></div>
+          <p class="introduction">오늘도 내 작은 공간에<br>놀러와 줘서 고마워 : )<br><br>좋아하는 것들을 모으고<br>소소한 하루를 남기는 곳.<br><span class="blue">좋은 일만 가득하길 ♡</span></p>
+          <div class="profile-bottom">
+            <div class="history"><span class="history-links"><i>▸</i><span>EDIT</span><i>▸</i><button type="button" data-go="profile">HISTORY</button></span><span class="history-arrows">▼▲</span></div>
+            <p class="owner"><b>지수</b> <span>♀</span> <small>(2005.03.01)</small></p>
+            <p class="mail">dear_jisu@cyworld.com</p>
+            <label class="buddy-label" for="buddy">일촌 파도타기</label><div class="buddy-select"><select id="buddy"><option>파도타기 0명</option><option>소연이의 미니홈피</option><option>민지의 작은 방</option><option>우리들의 이야기</option></select><span aria-hidden="true">▴</span></div>
+          </div>
+        </aside>
+        <section id="content" class="content-page" role="tabpanel" aria-labelledby="menu-home" tabindex="0"></section>
+      </div>
+      <div class="rings" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <nav class="menu" role="tablist" aria-label="미니홈피 메뉴" aria-orientation="vertical">
+        <button id="menu-home" type="button" role="tab" aria-controls="content" aria-selected="true" data-page="home">Home</button>
+        <button id="menu-profile" type="button" role="tab" aria-controls="content" aria-selected="false" tabindex="-1" data-page="profile">Profile</button>
+        <button id="menu-diary" type="button" role="tab" aria-controls="content" aria-selected="false" tabindex="-1" data-page="diary">Diary</button>
+        <button id="menu-photo" type="button" role="tab" aria-controls="content" aria-selected="false" tabindex="-1" data-page="photo">Photo</button>
+        <button id="menu-board" type="button" role="tab" aria-controls="content" aria-selected="false" tabindex="-1" data-page="board">Board</button>
+        <button id="menu-visitor" type="button" role="tab" aria-controls="content" aria-selected="false" tabindex="-1" data-page="visitor">Visitor</button>
+        <button id="menu-setting" type="button" role="tab" aria-controls="content" aria-selected="false" tabindex="-1" data-page="setting">Setting</button>
+      </nav>
+    </main>
+    <aside class="side-tools" aria-label="미니홈피 보조 영역">
+      <div class="bgm"><h2>♫ BGM</h2><p>♪ 기억을 걷는 시간</p><div class="player" data-playing="false" aria-label="BGM 컨트롤"><button type="button" data-bgm-action="toggle" aria-label="재생" aria-pressed="false"><svg class="play-icon" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.5 10 6l-7 4.5z"/></svg><svg class="pause-icon" viewBox="0 0 12 12" aria-hidden="true" hidden><path d="M2.5 2h2.6v8H2.5zM6.9 2h2.6v8H6.9z"/></svg></button><button type="button" data-bgm-action="next" aria-label="다음 곡"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5v9L8.2 6zM9 1.5h1v9H9z"/></svg></button><button type="button" data-bgm-action="stop" aria-label="정지"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 2.5h7v7h-7z"/></svg></button><input type="range" min="0" max="100" value="0" tabindex="-1" aria-hidden="true"><span class="volume" aria-hidden="true">▂▃▅▆</span></div></div>
+    </aside>
+  </div>
+  <footer class="prototype-note">Dear Series · 클래식 미니홈피 UI 시안 / 예시 데이터 · 변경 내용은 이 창을 닫으면 사라집니다.</footer>
+</div></div>
+<aside class="inspector" aria-label="미니홈피 편집 패널">
+  <header class="inspector-header"><span>12 / MINI HOMPY</span><h2>미니홈피 편집</h2><p>수정하면 왼쪽 화면에 바로 반영됩니다.</p><button id="saveImage" type="button">현재 화면 PNG 저장 ↓</button><p id="saveStatus" role="status" aria-live="polite"></p></header>
+  <form id="editor" onsubmit="return false">
+    <details open><summary>홈 · 프로필</summary><div id="fields-home" class="editor-fields"></div></details>
+    <details open><summary>사진 · 미니룸</summary><div class="editor-fields">
+      <label for="profileUpload">프로필 사진</label><input id="profileUpload" data-upload="profile" type="file" accept="image/png,image/jpeg,image/webp,image/gif"><button type="button" data-restore="profile">기본 프로필 사진</button>
+      <label for="roomUpload">미니룸 이미지 1장</label><input id="roomUpload" data-upload="room" type="file" accept="image/png,image/jpeg,image/webp,image/gif"><button type="button" data-restore="room">기본 미니룸 이미지</button>
+      <label for="roomFit">미니룸 이미지 맞춤</label><select id="roomFit" data-key="roomFit"><option value="cover">영역 채우기</option><option value="contain">전체 보이기</option></select>
+      <p>PNG · JPG · WebP · GIF / 최대 20 MB</p>
+    </div></details>
+    <details open><summary>전체 스킨</summary><div class="editor-fields">
+      <label for="backgroundMode">전체 배경 방식</label><select id="backgroundMode" data-key="backgroundMode"><option value="solid">단색 배경</option><option value="image">이미지 배경</option></select>
+      <label for="skinUpload">전체 배경 이미지</label><input id="skinUpload" data-upload="skin" type="file" accept="image/png,image/jpeg,image/webp,image/gif"><button type="button" data-restore="skin">기본 스킨 이미지</button>
+      <label for="skinFit">이미지 맞춤</label><select id="skinFit" data-key="skinFit"><option value="cover">영역 채우기</option><option value="contain">전체 보이기</option></select>
+      <div id="fields-skin"></div><p>한 장의 이미지가 미니홈피 전체 바탕에 깔립니다. 흰 페이지 둘레와 우측 영역에 이어서 표시됩니다.</p>
+    </div></details>
+    <details><summary>메뉴별 내용</summary><div class="editor-fields">
+      <label for="editPage">편집할 메뉴</label><select id="editPage"><option value="profile">Profile</option><option value="diary">Diary</option><option value="photo">Photo</option><option value="visitor">Visitor</option><option value="board">Board</option></select>
+      <div id="fields-page"></div>
+      <div id="photo-upload-field" hidden><label for="photoUpload">사진첩 이미지</label><input id="photoUpload" data-upload="photo" type="file" accept="image/png,image/jpeg,image/webp,image/gif"><button type="button" data-restore="photo">기본 사진첩 이미지</button></div>
+      <div id="visitor-upload-fields" hidden><h4>방명록별 사진</h4><label for="visitorUpload0">첫 번째 방명록 사진</label><input id="visitorUpload0" data-upload="visitor0" type="file" accept="image/png,image/jpeg,image/webp,image/gif"><label for="visitor0Fit">이미지 맞춤</label><select id="visitor0Fit" data-key="visitor0Fit"><option value="cover">영역 채우기</option><option value="contain">전체 보이기</option></select><button type="button" data-restore="visitor0">기본 사진으로</button><label for="visitorUpload1">두 번째 방명록 사진</label><input id="visitorUpload1" data-upload="visitor1" type="file" accept="image/png,image/jpeg,image/webp,image/gif"><label for="visitor1Fit">이미지 맞춤</label><select id="visitor1Fit" data-key="visitor1Fit"><option value="cover">영역 채우기</option><option value="contain">전체 보이기</option></select><button type="button" data-restore="visitor1">기본 사진으로</button><label for="visitorUpload2">세 번째 방명록 사진</label><input id="visitorUpload2" data-upload="visitor2" type="file" accept="image/png,image/jpeg,image/webp,image/gif"><label for="visitor2Fit">이미지 맞춤</label><select id="visitor2Fit" data-key="visitor2Fit"><option value="cover">영역 채우기</option><option value="contain">전체 보이기</option></select><button type="button" data-restore="visitor2">기본 사진으로</button></div>
+    </div></details>
+    <details><summary>색상 · 보조 영역</summary><div id="fields-style" class="editor-fields"></div></details>
+  </form>
+  <p id="uploadStatus" class="upload-status" role="status" aria-live="polite"></p>
+  <footer class="inspector-footer">메뉴를 바꿔도 편집 내용은 유지됩니다.<br>새로고침하거나 창을 닫으면 초기화됩니다.</footer>
+</aside></div>
+<script src="../js/12-minihompy.js?v=bgm-gap-97"></script><script src="../js/12-minihompy-inspector.js?v=bgm-gap-97"></script><script src="../js/frame-host.js"></script>
+</body></html>
