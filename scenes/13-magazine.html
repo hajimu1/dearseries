@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ko">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Magazine · Dear Series</title><link rel="stylesheet" href="../css/13-magazine.css?v=magazine-162"></head>
+<body><main class="workspace">
+<section id="preview" class="preview" data-zoom="fit" aria-label="매거진 미리보기">
+  <div class="preview-heading"><span>DEAR SERIES / EDITION 13</span><div class="preview-tools"><span>LAYOUT / TYPE / PRINT</span><div class="zoom-switch" role="group" aria-label="미리보기 배율"><button type="button" data-preview-zoom="fit" aria-pressed="true">화면 맞춤</button><button type="button" data-preview-zoom="actual" aria-pressed="false">출력 100%</button></div></div></div>
+  <div class="page-viewport"><div class="page-wrap"><canvas tabindex="0" id="scene" width="2160" height="2880" aria-label="이미지와 기사가 교차하는 3단 매거진. 편집할 칸을 클릭하거나 오른쪽 기사 선택을 이용하세요."></canvas><div id="selection" hidden aria-hidden="true"></div></div></div>
+  <div class="preview-caption"><span>01 — A CATALOGUE OF ORDINARY WONDERS</span><span>2160 × 2880 / PNG</span></div>
+</section>
+<aside class="inspector"><header><span>13 / MAGAZINE</span><h1>Magazine Studio</h1><p>글자나 사진을 클릭하면 해당 편집 도구가 열립니다.</p><button type="button" id="save" disabled>매거진 PNG 저장 ↓</button><p id="status" role="status" aria-live="polite">사진과 서체를 불러오는 중…</p></header>
+<nav class="tabs" aria-label="편집 항목"><button type="button" data-tab="page" aria-pressed="true">지면</button><button type="button" data-tab="article" aria-pressed="false">칸 설정</button><button type="button" data-tab="type" aria-pressed="false">글자</button><button type="button" data-tab="surface" aria-pressed="false">종이 표면</button><button type="button" data-tab="photo" aria-pressed="false">사진</button></nav>
+<div id="selectionContext" class="selection-context" role="status" aria-live="polite">지면 전체</div><div id="blockMap" class="block-map" role="group" aria-label="편집할 칸 바로 선택"></div>
+<form id="editor"><fieldset id="controls" disabled>
+<section data-panel="page">
+  <h2>매거진 정보</h2>
+  <label for="masthead">매거진 이름</label><input id="masthead" data-page="masthead" maxlength="24">
+  <p class="hint">서체와 크기는 글자를 클릭하거나 ‘글자’ 탭에서 조정하세요.</p>
+  <label for="subtitle">한 줄 소개</label><input id="subtitle" data-page="subtitle" maxlength="100">
+  <div class="pair"><div><label for="issue">발행 정보</label><input id="issue" data-page="issue" maxlength="40"></div><div><label for="edition">호수 · 가격</label><input id="edition" data-page="edition" maxlength="30"></div></div>
+  <label for="footer">하단 문구</label><input id="footer" data-page="footer" maxlength="120">
+  <h2>종이와 잉크</h2><div class="palettes" aria-label="지면 색 조합"><button type="button" data-palette="original">레몬 · 로즈</button><button type="button" data-palette="mint">민트 · 살구</button><button type="button" data-palette="paper">종이 · 먹</button></div>
+  <div class="pair"><div><label for="paper">종이색</label><input id="paper" type="color" data-page="paper"></div><div><label for="ink">기본 잉크색</label><input id="ink" type="color" data-page="ink"></div></div>
+  <h2>전체 인쇄</h2><p class="hint">글자·사진·구분선·색면 전체에 적용됩니다.</p><label for="density">인쇄 농도 <output for="density"></output></label><input id="density" data-page="density" type="range" min=".65" max="1" step=".01"><label for="bleed">잉크 번짐 <output for="bleed"></output></label><input id="bleed" data-page="bleed" type="range" min="0" max="1" step=".05">
+</section>
+<section data-panel="surface" hidden><h2>종이 표면</h2><p class="hint">기본 종이 5종과 추가 종이·복사기 질감 10종입니다. 미리보기와 PNG에 동일하게 적용됩니다.</p><label for="paperFinish">텍스처</label><select id="paperFinish" data-page="paperFinish"><option value="none">표면 없음</option><optgroup label="기본 종이"><option value="soft">부드러운 종이 결</option><option value="fibers">잔잔한 세로 결</option><option value="grain">빈티지 미세 입자</option><option value="folded">접힌 종이</option><option value="aged184">오래된 종이 · 접힌 자국</option></optgroup><optgroup label="추가 종이 · 복사기"><option value="stained-paper">얼룩진 종이</option><option value="glued-paper">풀 붙인 종이 · 주름</option><option value="punched-scan">펀칭된 스캔 용지</option><option value="newsprint">신문용지 · 잔잔한 결</option><option value="rice-paper">한지 · 섬유 결</option><option value="kraft-wrinkles">크라프트지 · 구김</option><option value="white-wrinkles">흰 종이 · 부드러운 주름</option><option value="light-copy">옅은 복사 용지</option><option value="scan-lines">복사기 세로 줄무늬</option><option value="toner-marks">토너 얼룩 · 스캔 흔적</option></optgroup></select><p class="hint">진한 종이·복사기 질감은 최대 강도에서도 지면이 지나치게 어두워지지 않도록 보정됩니다.</p><label for="textureOpacity">표면 강도 <output for="textureOpacity"></output></label><input id="textureOpacity" data-page="textureOpacity" type="range" min="0" max="1" step=".01"><label for="grain">종이 입자 <output for="grain"></output></label><input id="grain" data-page="grain" type="range" min="0" max="1" step=".01"></section>
+<section data-panel="article" hidden>
+  <h2>칸 선택 · 내용</h2><label for="articleSelect">편집할 칸</label><select id="articleSelect"></select>
+  <div id="articleTextControls">
+    <label for="showKicker"><input id="showKicker" type="checkbox" data-item="showKicker"> 분류 제목 표시</label>
+    <label for="kicker">작은 제목 · 번호</label><input id="kicker" data-item="kicker" maxlength="60">
+    <label for="title">제목</label><textarea id="title" data-item="title" rows="2" maxlength="70"></textarea>
+    <label for="titleAlign">제목 정렬</label><select id="titleAlign" data-item="titleAlign"><option value="left">왼쪽 정렬</option><option value="center">가운데 정렬</option><option value="right">오른쪽 정렬</option></select>
+    <label for="body">본문 · 캡션</label><textarea id="body" data-item="body" rows="7" maxlength="450"></textarea>
+    <p class="hint">글자 탭에서 서체·크기·장평과 영역 안에 맞추기를 설정할 수 있습니다.</p>
+  </div>
+  <div id="photoLabels" hidden><h2>사진 위 라벨</h2><p class="hint">입력한 글자에 맞춰 상자가 생기며, 상자는 칸 안에 유지됩니다.</p>
+    <label for="photoLabel1">라벨 1</label><input id="photoLabel1" data-item="photoLabel1" maxlength="32">
+    <div class="pair"><div><label for="photoLabel1X">좌우 이동 <output for="photoLabel1X"></output></label><input id="photoLabel1X" type="range" min="-.1" max=".1" step=".01" data-item="photoLabel1X"></div><div><label for="photoLabel1Y">상하 이동 <output for="photoLabel1Y"></output></label><input id="photoLabel1Y" type="range" min="-.1" max=".1" step=".01" data-item="photoLabel1Y"></div></div>
+    <label for="photoLabel2">라벨 2</label><input id="photoLabel2" data-item="photoLabel2" maxlength="32">
+    <div class="pair"><div><label for="photoLabel2X">좌우 이동 <output for="photoLabel2X"></output></label><input id="photoLabel2X" type="range" min="-.1" max=".1" step=".01" data-item="photoLabel2X"></div><div><label for="photoLabel2Y">상하 이동 <output for="photoLabel2Y"></output></label><input id="photoLabel2Y" type="range" min="-.1" max=".1" step=".01" data-item="photoLabel2Y"></div></div>
+    <label for="photoLabel3">라벨 3</label><input id="photoLabel3" data-item="photoLabel3" maxlength="32">
+    <div class="pair"><div><label for="photoLabel3X">좌우 이동 <output for="photoLabel3X"></output></label><input id="photoLabel3X" type="range" min="-.1" max=".1" step=".01" data-item="photoLabel3X"></div><div><label for="photoLabel3Y">상하 이동 <output for="photoLabel3Y"></output></label><input id="photoLabel3Y" type="range" min="-.1" max=".1" step=".01" data-item="photoLabel3Y"></div></div>
+    <label for="photoLabelColor">라벨 배경색</label><input id="photoLabelColor" type="color" data-item="photoLabelColor">
+  </div>
+  <div id="dayLabelControls" hidden><h2>세로 라벨</h2><label for="dayLabel">라벨 문구</label><input id="dayLabel" data-item="dayLabel" maxlength="24"><label for="dayLabelColor">라벨 색상</label><input id="dayLabelColor" type="color" data-item="dayLabelColor"></div>
+  <div id="phoneBannerControls" hidden><h2>상단 배너</h2><label for="phoneBannerColor">사각형 배경색</label><input id="phoneBannerColor" type="color" data-item="phoneBannerColor"><label for="phoneBannerTextColor">배너 기본 글자색</label><input id="phoneBannerTextColor" type="color" data-item="phoneBannerTextColor"><label for="phoneBannerTop">위쪽 작은 문구</label><input id="phoneBannerTop" data-item="phoneBannerTop" maxlength="50"><label for="phoneBannerMain">가운데 큰 문구</label><input id="phoneBannerMain" data-item="phoneBannerMain" maxlength="24"><label for="phoneBannerBottom">아래쪽 작은 문구</label><input id="phoneBannerBottom" data-item="phoneBannerBottom" maxlength="50"></div>
+  <div id="extraFields"></div>
+  <div id="articleTypographyControls"><h2>색상 · 장식</h2>
+  <label id="titleBoxControl" hidden><input type="checkbox" data-item="titleBox"> 제목 배경 상자 표시</label>
+  <div class="pair"><div><label for="blockColor">칸 배경색</label><input id="blockColor" data-item="color" type="color"></div><div><label for="textColor">기본 글자색</label><input id="textColor" data-item="ink" type="color"></div></div>
+  <div id="frameColorControl" hidden><label for="frameColor">제목 상자 배경색</label><input id="frameColor" data-item="frameColor" type="color"></div>
+  <div id="ticketColorControls" hidden><div class="pair"><div><label for="ticketAccent">중앙 강조색</label><input id="ticketAccent" data-item="ticketAccent" type="color"></div><div><label for="ticketBadgeColor">원형 배지 · 숫자색</label><input id="ticketBadgeColor" data-item="ticketBadgeColor" type="color"></div></div></div>
+  </div>
+  <button class="secondary" type="button" id="editPhoto">이 칸 사진 보정 →</button>
+</section>
+<section data-panel="type" hidden>
+  <h2>편집할 글자</h2>
+  <div class="pair"><div><label for="textScope">위치</label><select id="textScope"></select></div><div><label for="textTarget">부분</label><select id="textTarget"></select></div></div>
+  <label for="typeText">문구</label><textarea id="typeText" rows="3" maxlength="600"></textarea>
+  <div class="toggle-row"><label><input id="typeVisible" type="checkbox" data-type="visible"> 표시</label><label><input id="typeContain" type="checkbox" data-type="contain"> 영역 안에 맞추기</label></div>
+  <h2>서체</h2><label for="fontSearch">서체 이름 검색</label><input id="fontSearch" type="search" placeholder="예: 명조, Noto, Corben" autocomplete="off">
+  <label for="fontLanguage">언어</label><select id="fontLanguage"><option value="">모든 언어</option></select>
+  <label for="fontFamily">서체 · 고딕 / 세리프 / 그외</label><select id="fontFamily" size="7" aria-describedby="fontResult"></select><p id="fontResult" class="hint"></p>
+  <label for="fontVariant">굵기 · 기울임</label><select id="fontVariant"></select><div id="fontSample" class="font-sample" aria-label="선택한 서체 미리보기">가나다 Aa 123</div>
+  <h2>크기 · 간격</h2>
+  <div class="pair"><div><label for="typeSize">글자 크기 (px)</label><input id="typeSize" data-type="size" type="number" min="6" max="160" step=".5"></div><div><label for="typeColor">글자색</label><input id="typeColor" data-type="color" type="color"></div></div>
+  <label for="typeWidth">장평 <output for="typeWidth"></output></label><input id="typeWidth" data-type="width" type="range" min=".5" max="2" step=".01">
+  <div class="pair"><div><label for="typeTracking">자간 (px)</label><input id="typeTracking" data-type="tracking" type="number" min="-2" max="12" step=".1"></div><div><label for="typeLineHeight">행간 (배)</label><input id="typeLineHeight" data-type="lineHeight" type="number" min=".7" max="2.5" step=".05"></div></div>
+  <label for="typeAlign">정렬</label><select id="typeAlign" data-type="align"><option value="left">왼쪽</option><option value="center">가운데</option><option value="right">오른쪽</option><option value="justify">양쪽</option></select>
+  <h2>위치</h2><div class="pair"><div><label for="typeX">좌우 이동 (px)</label><input id="typeX" data-type="x" type="number" min="-100" max="100" step="1"></div><div><label for="typeY">상하 이동 (px)</label><input id="typeY" data-type="y" type="number" min="-100" max="100" step="1"></div></div>
+  <button id="resetType" type="button" class="secondary">이 글자의 서식 초기화</button>
+</section>
+<section data-panel="photo" hidden>
+  <h2 id="photoTitle">사진 보정</h2><label for="photoSelect">편집할 사진</label><select id="photoSelect"></select>
+<div id="ticketPhotoControls" hidden><h2>작은 사진 개별 보정</h2><label for="ticketPhotoSelect">편집할 사진</label><select id="ticketPhotoSelect"><option value="0">사진 1 · 왼쪽</option><option value="1">사진 2 · 가운데</option><option value="2">사진 3 · 오른쪽</option></select><div data-ticket-slot="0"><label class="upload">사진 1 교체<input type="file" data-ticket-photo="0" accept="image/png,image/jpeg,image/webp"></label><button type="button" class="secondary" data-ticket-restore="0">사진 1 기본 이미지로</button></div><div data-ticket-slot="1"><label class="upload">사진 2 교체<input type="file" data-ticket-photo="1" accept="image/png,image/jpeg,image/webp"></label><button type="button" class="secondary" data-ticket-restore="1">사진 2 기본 이미지로</button></div><div data-ticket-slot="2"><label class="upload">사진 3 교체<input type="file" data-ticket-photo="2" accept="image/png,image/jpeg,image/webp"></label><button type="button" class="secondary" data-ticket-restore="2">사진 3 기본 이미지로</button></div><label for="ticket-stamp">스탬프 효과<output for="ticket-stamp"></output></label><input id="ticket-stamp" data-ticket-image="stamp" type="range" min="0" max="1" step="0.01"><label for="ticket-threshold">한계값<output for="ticket-threshold"></output></label><input id="ticket-threshold" data-ticket-image="threshold" type="range" min="0" max="255" step="1"><label for="ticket-noise">이미지 노이즈<output for="ticket-noise"></output></label><input id="ticket-noise" data-ticket-image="noise" type="range" min="0" max="1" step="0.01"><label for="ticket-zoom">확대<output for="ticket-zoom"></output></label><input id="ticket-zoom" data-ticket-image="zoom" type="range" min="1" max="3" step="0.05"><label for="ticket-cropX">좌우 위치<output for="ticket-cropX"></output></label><input id="ticket-cropX" data-ticket-image="cropX" type="range" min="0" max="1" step="0.01"><label for="ticket-cropY">상하 위치<output for="ticket-cropY"></output></label><input id="ticket-cropY" data-ticket-image="cropY" type="range" min="0" max="1" step="0.01"><label for="ticket-fit">이미지 맞춤</label><select id="ticket-fit" data-ticket-image="fit"><option value="cover">칸 채우기</option><option value="contain">전체 보이기</option></select><label for="ticket-ink">사진 잉크색</label><input id="ticket-ink" data-ticket-image="photoInk" type="color"><p class="hint">선택한 사진만 보정합니다. 지면의 전체 인쇄 농도·번짐과 종이 표면도 함께 적용됩니다.</p></div>
+  <div id="photoControls">
+    <label class="upload" for="upload">사진 교체 ↑<input id="upload" type="file" accept="image/png,image/jpeg,image/webp"></label><button class="secondary" id="restore" type="button">기본 사진으로</button>
+    <h2>인쇄 보정</h2><p class="hint">밝은 부분은 종이색으로, 어두운 부분은 잉크색으로 인쇄됩니다.</p>
+    <label for="stamp">스탬프 효과 <output for="stamp"></output></label><input id="stamp" data-image="stamp" type="range" min="0" max="1" step=".01">
+    <label for="threshold">한계값 <output for="threshold"></output></label><input id="threshold" data-image="threshold" type="range" min="0" max="255" step="1">
+    <label for="noise">이미지 노이즈 <output for="noise"></output></label><input id="noise" data-image="noise" type="range" min="0" max="1" step=".01">
+    <h2>사진 배치</h2><label for="fit">이미지 맞춤</label><select id="fit" data-image="fit"><option value="contain">전체 보이기</option><option value="cover">칸 채우기</option></select>
+    <label for="photoShape">사진 모양</label><select id="photoShape" data-item="photoShape"><option value="rectangle">사각형</option><option value="circle">원형 · 타원형</option></select>
+    <div class="pair"><div><label for="photoInk">사진 잉크색</label><input id="photoInk" type="color" data-item="photoInk"></div><div><label for="photoPaper">원형 배경색</label><input id="photoPaper" type="color" data-item="photoPaper"></div></div>
+    <label for="zoom">확대 <output for="zoom"></output></label><input id="zoom" data-image="zoom" type="range" min="1" max="3" step=".05">
+    <label for="cropX">좌우 위치 <output for="cropX"></output></label><input id="cropX" data-image="cropX" type="range" min="0" max="1" step=".01">
+    <label for="cropY">상하 위치 <output for="cropY"></output></label><input id="cropY" data-image="cropY" type="range" min="0" max="1" step=".01">
+  </div><p id="noPhoto" class="hint" hidden>이 칸은 텍스트 전용입니다. 다른 사진을 선택하세요.</p>
+</section>
+</fieldset></form><footer class="inspector-foot">편집 내용은 메뉴를 이동해도 유지됩니다.<br>새로고침하면 기본 설정으로 돌아갑니다.</footer>
+</aside></main><script src="../js/13-magazine.js?v=magazine-162"></script><script src="../js/frame-host.js"></script></body></html>

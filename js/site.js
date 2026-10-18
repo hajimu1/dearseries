@@ -27,7 +27,9 @@ function activate(id) {
     const frame = document.createElement('iframe');
     frame.id = `frame-${id}`; frame.title = tabs[ids.indexOf(id)].querySelector('b').textContent + ' 편집기';
     frame.className = 'scene-frame'; frame.setAttribute('role', 'tabpanel'); frame.setAttribute('aria-labelledby', `tab-${id}`);
-    frame.allow = 'fullscreen'; frame.src = `scenes/${id}.html?v=20261017-minihompy-intro-align-position-99`;
+    frame.allow = 'fullscreen'; frame.src = location.protocol === 'file:' && location.pathname.endsWith('/site/index.html') && id === '13-magazine'
+      ? `../offline/scenes/${id}.html?v=20261017-magazine-162`
+      : `scenes/${id}.html?v=20261017-magazine-162`;
     frames.set(id, frame); document.getElementById('scenes').append(frame);
     notice('장면을 불러오는 중…');
   } else notice(frames.get(id).dataset.ready ? '' : '장면을 불러오는 중…');
