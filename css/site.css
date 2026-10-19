@@ -47,3 +47,9 @@ body[data-scene='13-magazine']>nav a[aria-selected=true]{background:#594731;colo
 body[data-scene='13-magazine']>nav a[aria-selected=true] span{color:#e5d6b9}
 body[data-scene='13-magazine']>nav a:hover{background:#d9c9ac;color:#40372c}
 body[data-scene='13-magazine'] .home-link{border-color:#ae9b7b;color:#5b4932}
+
+body[data-scene='14-ds']{background:#f5edef;color:#59424b}
+body[data-scene='14-ds']>header,body[data-scene='14-ds']>nav{background:#f8e9ef;border-color:#dfc3cf;color:#59424b}
+body[data-scene='14-ds']>nav a{color:#86576b;border-color:#dfc3cf}
+body[data-scene='14-ds']>nav a[aria-selected=true]{background:#a55a77;color:#fff}
+body[data-scene='14-ds']>nav a[aria-selected=true] span{color:#ffeaf2}
