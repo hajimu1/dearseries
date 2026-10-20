@@ -53,3 +53,24 @@ body[data-scene='14-ds']>header,body[data-scene='14-ds']>nav{background:#f8e9ef;
 body[data-scene='14-ds']>nav a{color:#86576b;border-color:#dfc3cf}
 body[data-scene='14-ds']>nav a[aria-selected=true]{background:#a55a77;color:#fff}
 body[data-scene='14-ds']>nav a[aria-selected=true] span{color:#ffeaf2}
+
+/* Compact scene switcher; the full collection opens above the editor. */
+.scene-navigation{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:7px 24px;background:#f4f3ef;border-bottom:1px solid #dddcd6;flex-shrink:0;position:relative;z-index:20;color:#272b30}
+#scenePicker{min-width:0}
+#scenePicker summary{display:flex;align-items:center;gap:24px;cursor:pointer;list-style:none;padding:8px 12px;border:1px solid #d2d5cf;border-radius:5px;background:#fff}
+#scenePicker summary::-webkit-details-marker{display:none}
+#currentScene{font-size:13px;font-weight:600;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.picker-caption{font-size:11px;color:#777f78;white-space:nowrap}
+#scenePicker[open] summary{border-color:#537565;background:#edf2ed}
+#scenePicker nav{position:absolute;top:calc(100% + 5px);left:24px;width:min(760px,calc(100vw - 48px));display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:12px;background:#f4f3ef;border:1px solid #d2d5cf;border-radius:7px;box-shadow:0 12px 30px #18291e26;max-height:calc(100dvh - 145px);overflow:auto}
+#scenePicker nav a{display:grid;grid-template-columns:23px minmax(0,1fr);padding:11px 10px;gap:3px 6px}
+#scenePicker nav a small{grid-row:span 2}
+#scenePicker nav a b{font-size:12px}
+#scenePicker nav a span{display:block;font-size:10px}
+.scene-step{display:flex;align-items:center;gap:5px;flex-shrink:0}
+#scenePosition{font-size:11px;font-variant-numeric:tabular-nums;color:#727b73;margin-right:6px}
+.scene-step button{font:16px Scene,sans-serif;width:34px;height:32px;border:1px solid #d2d5cf;border-radius:4px;background:#fff;color:#344940;cursor:pointer}
+.scene-step button:disabled{opacity:.35;cursor:default}
+.scene-step button:hover:not(:disabled){background:#e4ece5}
+#scenePicker summary:focus-visible,.scene-step button:focus-visible{outline:3px solid #80ad9e;outline-offset:2px}
+@media(max-width:640px){.scene-navigation{padding:7px 10px;gap:8px}#scenePicker{flex:1}#scenePicker summary{gap:8px;padding:8px}.picker-caption{font-size:10px}#scenePicker nav{left:10px;width:calc(100vw - 20px);grid-template-columns:repeat(2,minmax(0,1fr));padding:8px}#scenePicker nav a b{font-size:11px}#scenePosition{display:none}}

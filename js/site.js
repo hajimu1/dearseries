@@ -2,6 +2,8 @@
 const tabs = [...document.querySelectorAll('nav a')];
 const ids = tabs.map(tab => tab.hash.slice(1));
 const frames = new Map();
+const picker=document.getElementById('scenePicker'),pickerToggle=document.getElementById('scenePickerToggle');
+function closePicker(){picker.open=false;}
 const status = document.getElementById('status');
 const expectedOrigin = location.protocol === 'file:' ? 'null' : location.origin;
 const origin = expectedOrigin === 'null' ? '*' : expectedOrigin;
@@ -16,7 +18,7 @@ function activate(id) {
   pending = null;
   for (const [key, frame] of frames) {frame.hidden = key !== id; send(frame, {kind: 'active', value: key === id});}
   active = id;
-  document.getElementById('home').hidden=id!=='home';document.querySelector('nav').hidden=id==='home';
+  document.getElementById('home').hidden=id!=='home';document.getElementById('sceneNavigation').hidden=id==='home';closePicker();
   if(id==='home'){
    document.getElementById('home').scrollTop=0;
    document.body.dataset.scene='home';document.title='Dear Series · Archive';
@@ -28,15 +30,15 @@ function activate(id) {
     frame.id = `frame-${id}`; frame.title = tabs[ids.indexOf(id)].querySelector('b').textContent + ' 편집기';
     frame.className = 'scene-frame'; frame.setAttribute('role', 'tabpanel'); frame.setAttribute('aria-labelledby', `tab-${id}`);
     frame.allow = 'fullscreen'; frame.src = location.protocol === 'file:' && location.pathname.endsWith('/site/index.html') && ['13-magazine', '14-ds', '15-collage'].includes(id)
-      ? `../offline/scenes/${id}.html?v=20261020-collage-231`
-      : `scenes/${id}.html?v=20261020-collage-231`;
+      ? `../offline/scenes/${id}.html?v=20261021-navigation-233`
+      : `scenes/${id}.html?v=20261021-navigation-233`;
     frames.set(id, frame); document.getElementById('scenes').append(frame);
     notice('장면을 불러오는 중…');
   } else notice(frames.get(id).dataset.ready ? '' : '장면을 불러오는 중…');
   document.body.dataset.scene = id;
   document.title = `${tabs[ids.indexOf(id)].querySelector('b').textContent} · Dear Series`;
   tabs.forEach(tab => {const selected = tab.hash === '#' + id; tab.setAttribute('aria-selected', String(selected)); tab.tabIndex = selected ? 0 : -1;});
-  tabs[ids.indexOf(id)].scrollIntoView({block: 'nearest', inline: 'nearest'});
+  const index=ids.indexOf(id);document.getElementById('currentScene').textContent=String(index+1).padStart(2,'0')+' · '+tabs[index].querySelector('b').textContent;document.getElementById('scenePosition').textContent=(index+1)+' / '+ids.length;document.getElementById('previousScene').disabled=index===0;document.getElementById('nextScene').disabled=index===ids.length-1;
   if (location.hash !== '#' + id) history.replaceState(null, '', '#' + id);
 }
 function requestScene(id) {
@@ -58,7 +60,7 @@ window.addEventListener('message', event => {
   if (message.kind === 'error' && id === active) notice(message.message || '장면을 불러오지 못했어요. 새로고침해 주세요.');
 });
 tabs.forEach((tab, index) => {
-  tab.onclick = event => {event.preventDefault(); requestScene(ids[index]);};
+  tab.onclick = event => {event.preventDefault();pickerToggle.focus();closePicker();requestScene(ids[index]);};
   tab.onkeydown = event => {
     let next;
     if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
@@ -66,11 +68,16 @@ tabs.forEach((tab, index) => {
     else if (event.key === 'Home') next = 0;
     else if (event.key === 'End') next = tabs.length - 1;
     else return;
-    event.preventDefault(); tabs[next].focus(); requestScene(ids[next]);
+    event.preventDefault(); tabs.forEach((item,i)=>item.tabIndex=i===next?0:-1);tabs[next].focus();
   };
 });
 window.addEventListener('hashchange', () => requestScene(ids.includes(location.hash.slice(1))?location.hash.slice(1):'home'));
-window.addEventListener('resize', () => tabs[ids.indexOf(active)]?.scrollIntoView({block: 'nearest', inline: 'nearest'}));
+document.getElementById('previousScene').onclick=()=>requestScene(ids[ids.indexOf(active)-1]);
+document.getElementById('nextScene').onclick=()=>requestScene(ids[ids.indexOf(active)+1]);
+picker.addEventListener('toggle',()=>{if(picker.open){tabs.forEach((tab,i)=>tab.tabIndex=i===ids.indexOf(active)?0:-1);}});
+document.addEventListener('click',event=>{if(!picker.contains(event.target))closePicker();});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&picker.open){event.preventDefault();closePicker();pickerToggle.focus();}});
+window.addEventListener('blur',closePicker);
 document.querySelectorAll('header a[href="#home"]').forEach(link=>link.onclick=event=>{event.preventDefault();requestScene('home');});
 [...tabs.keys()].reverse().forEach(i=>{
  const tab=tabs[i],card=document.createElement('a');card.href=tab.hash;card.className='template-card';card.dataset.category=tab.dataset.kind||'motion';
