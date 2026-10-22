@@ -1,0 +1,23 @@
+KMU 80 Sungkok Serif / 국민대학교 80주년 성곡체
+Copyright: 국민대학교 (Kookmin University).
+Official source and usage terms: https://80.kookmin.ac.kr/vision/font
+License identified by the official page: CC BY-ND (attribution required; no derivatives).
+Commercial use allowed; selling the font itself is prohibited.
+The original font file is distributed unmodified.
+Downloaded 2026-10-21 from:
+https://cdn.jsdelivr.net/gh/Project-Noonnu/2607101542@kmu80sungkokserif/kmu80sungkokserif/KMU80SungkokSerif.woff2
+
+LXGW WenKai TC / 霞鶩文楷 TC Regular v1.530
+Project: https://github.com/lxgw/LxgwWenkaiTC
+License: SIL Open Font License 1.1; see LXGW-WenKai-TC-OFL.txt.
+Original release font distributed unmodified.
+https://github.com/lxgw/LxgwWenkaiTC/releases/download/v1.530/LXGWWenKaiTC-Regular.ttf
+
+Scene 16 uses these fonts only for display titles and menu/slot headings.
+CSS unicode-range routes Hangul to Sungkok Serif and Han to WenKai TC.
+Latin retains GameSerif / Impact. Small body text retains its existing font.
+
+Sepia Latin title: Forum Regular, Copyright (c) 2011 Denis Masharov.
+SIL Open Font License 1.1; see Forum-OFL.txt. Existing unmodified asset from fonts/magazine/forum-400-normal.ttf.
+
+Noir titles and headings: Special Elite Regular, SIL OFL (see Special-Elite-LICENSE.txt). Original existing asset: fonts/magazine/special-elite-400-normal.ttf.
