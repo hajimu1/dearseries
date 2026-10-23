@@ -3,7 +3,7 @@ const $=id=>document.getElementById(id),canvas=$('scene'),ctx=canvas.getContext(
 const defaults={timeText:'9:41',dateText:'10월 13일 화요일',appLabel:'메시지',nowText:'지금',wallpaper:'sunset',backgroundColor:'#e9e9ef',battery:100,arrivalGap:1.8,hold:2.4,deleteSpeed:1,deleteMode:'individual',gifWidth:720,loop:true};
 const config={...defaults};
 for(const kind of ['wallpaper','outside'])Object.assign(defaults,{[kind+'X']:.5,[kind+'Y']:.5,[kind+'Zoom']:1,[kind+'Blur']:0});
-defaults.vhsOpacity=0;Object.assign(config,defaults);
+defaults.vhsOpacity=0;defaults.vhsEmboss=0;defaults.tapeTone=0;Object.assign(config,defaults);
 const defaultMessages=()=>[{sender:'테스트1',text:'테스트 문구입니다.'},{sender:'테스트2',text:'테스트 문구입니다.'},{sender:'테스트3',text:'테스트 문구입니다.'}];
 let messages=defaultMessages(),wallpaperImage=null,outsideImage=null,ready=false,time=0,playing=false,lastTick=0,busy=false,cancelled=false;
 let clearAt=null,clearCount=null;
@@ -117,7 +117,7 @@ function draw(t=time){
   box(106.5,874,3,7,1.5,'#536074');box(107,875,2,2,1,'white');
   box(359,864,27,18,4,'white');box(365,860,12,6,2,'white');ctx.strokeStyle='#657b91';ctx.lineWidth=2;ctx.beginPath();ctx.arc(373,873,5,0,Math.PI*2);ctx.stroke();
   box(175,921,130,4,2,'white');ctx.restore();
-  applyVhs(ctx,config.vhsOpacity,t/config.duration);
+  applyVhs(ctx,config.vhsOpacity,t/config.duration);applyTapeTone(ctx,config.tapeTone);applyVhsEmboss(ctx,config.vhsEmboss);
   canvas.dataset.notifications=messages.filter((_,i)=>t>=arrival(i)&&deletion(i,t).finish<1).length;
 }
 function renderMessages(){resetAlerts();const root=$('messageRows');root.replaceChildren();messages.forEach((message,i)=>{const row=document.createElement('div');row.className='message-row';const head=document.createElement('header');head.textContent=`문자 ${i+1}`;const remove=document.createElement('button');remove.type='button';remove.textContent='삭제';remove.disabled=messages.length===1;remove.dataset.remove=i;head.append(remove);row.append(head);for(const [key,labelText] of [['sender','보낸 사람'],['text','문자 내용']]){const label=document.createElement('label');label.htmlFor=`${key}${i}`;label.textContent=labelText;const input=document.createElement(key==='text'?'textarea':'input');input.id=label.htmlFor;input.maxLength=key==='text'?180:28;input.value=message[key];input.dataset.message=i;input.dataset.key=key;row.append(label,input);}root.append(row);});$('addMessage').disabled=messages.length===5;$('messageCount').textContent=`${messages.length} / 5`;duration();time=Math.min(time,config.duration);syncTime();draw();}

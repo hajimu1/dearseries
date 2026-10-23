@@ -1,7 +1,8 @@
-defaults.vhsOpacity=0;config.vhsOpacity??=0;
+config.vhsEmboss??=0;
+defaults.vhsEmboss=0;defaults.tapeTone=0;config.tapeTone??=0;defaults.vhsOpacity=0;config.vhsOpacity??=0;
 const vhsBox=document.createElement('div');vhsBox.innerHTML='<label for="vhsOpacity">VHS 질감 · 전체 강도</label><input id="vhsOpacity" type="range" min="0" max="1" step="0.01"><p class="help">0은 원본. 저화질·스캔라인·색 번짐·엠보싱을 함께 조절합니다.</p>';
-document.getElementById('phone-settings-panel-3').append(vhsBox);const vhsSlider=$('vhsOpacity');vhsSlider.value=config.vhsOpacity;vhsSlider.oninput=()=>{config.vhsOpacity=Number(vhsSlider.value);draw(time)};
-const baseDraw=draw;draw=function(seconds){baseDraw(seconds);if(ready)applyVhs(outputCtx,config.vhsOpacity,seconds/config.duration)};
-const baseSyncForm=syncForm;syncForm=function(){baseSyncForm();vhsSlider.value=config.vhsOpacity||0};
+vhsBox.innerHTML+="<label for=\"tapeTone\">테이프 색감 · 질감</label><input id=\"tapeTone\"  type=\"range\" min=\"0\" max=\"1\" step=\"0.01\" value=\"0\"><p class=\"help\">0은 원본. 바랜 색감·가우시안 빛 번짐·미세한 입자를 함께 조절합니다.</p>";vhsBox.innerHTML+="<label for=\"vhsEmboss\">VHS 엠보스</label><input id=\"vhsEmboss\"  type=\"range\" min=\"0\" max=\"1\" step=\"0.01\" value=\"0\"><p class=\"help\">0은 꺼짐. 윤곽의 밝은 면과 어두운 면을 강조해 도드라진 질감을 만듭니다.</p>";document.getElementById('phone-settings-panel-3').append(vhsBox);const embossSlider=$('vhsEmboss');embossSlider.value=config.vhsEmboss;embossSlider.oninput=()=>{config.vhsEmboss=Number(embossSlider.value);draw(time)};const echoSlider=$('tapeTone');echoSlider.value=config.tapeTone;echoSlider.oninput=()=>{config.tapeTone=Number(echoSlider.value);draw(time)};const vhsSlider=$('vhsOpacity');vhsSlider.value=config.vhsOpacity;vhsSlider.oninput=()=>{config.vhsOpacity=Number(vhsSlider.value);draw(time)};
+const baseDraw=draw;draw=function(seconds){baseDraw(seconds);if(ready)applyVhs(outputCtx,config.vhsOpacity,seconds/config.duration);applyTapeTone(outputCtx,config.tapeTone);applyVhsEmboss(outputCtx,config.vhsEmboss)};
+const baseSyncForm=syncForm;syncForm=function(){baseSyncForm();embossSlider.value=config.vhsEmboss||0;echoSlider.value=config.tapeTone||0;vhsSlider.value=config.vhsOpacity||0};
 
 window.SceneBridge={ready:()=>ready,busy:()=>recording||loadingCount>0||$("savePng").disabled,playing:()=>playing,setPlaying:value=>{playing=value;last=0;syncPlay()}};

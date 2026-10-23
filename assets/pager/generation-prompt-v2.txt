@@ -1,0 +1,4 @@
+Mode: built-in image_gen edit; transparent_background: true
+Input: photographic-pager-v1.png
+Output: photographic-pager-v2.png
+Prompt: Edit this pager photograph asset only to refine its material wear. Preserve EXACT 1536x1024 composition, camera, object silhouette, blank olive LCD rectangular position and dimensions, bezel, all four buttons, LED, lower blank label recess, lighting and actual alpha transparency. Reduce the all-over chalky scuffs and excessive scratch coverage on the black body by about 75 percent, so it looks like a well cared for used 1990s pager. Preserve realistic fine pebbled black plastic. Concentrate very subtle authentic handling wear at corners and around buttons; reduce the deep random scratches on the silver bezel and lower label. Keep screen blank, no text or logos. Do not move or resize anything; this asset must align with existing animated LCD overlays. Photorealistic catalog cutout, transparent background preserved.

@@ -1,0 +1,7 @@
+Pocket Signal / Scene 17
+Galmuri11: existing font, https://github.com/quiple/galmuri (SIL OFL 1.1).
+GNU Unifont 17.0.01: https://unifoundry.com/pub/unifont/unifont-17.0.01/font-builds/unifont-17.0.01.otf
+Unmodified original, embedded under SIL OFL 1.1; see Unifont-LICENSE.txt.
+Font fallback cannot guarantee every Unicode character or complex-script shaping.
+
+Galmuri7 2.39.9: https://cdn.jsdelivr.net/npm/galmuri@2.39.9/dist/Galmuri7.woff2 (same SIL OFL 1.1).
