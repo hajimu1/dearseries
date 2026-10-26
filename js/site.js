@@ -29,7 +29,7 @@ function activate(id) {
     const frame = document.createElement('iframe');
     frame.id = `frame-${id}`; frame.title = tabs[ids.indexOf(id)].querySelector('b').textContent + ' 편집기';
     frame.className = 'scene-frame'; frame.setAttribute('role', 'tabpanel'); frame.setAttribute('aria-labelledby', `tab-${id}`);
-    frame.allow = 'fullscreen'; frame.src = location.protocol === 'file:' && location.pathname.endsWith('/site/index.html') && ['13-magazine', '14-ds', '15-collage', '16-game-menu', '17-pager', '18-tv', '19-mahjong'].includes(id)
+    frame.allow = 'fullscreen'; frame.src = location.protocol === 'file:' && location.pathname.endsWith('/site/index.html') && ['13-magazine', '14-ds', '15-collage', '16-game-menu', '17-pager', '18-tv', '19-mahjong', '20-visual-novel'].includes(id)
       ? `../offline/scenes/${id}.html?v=20261021-memory-card-16`
       : `scenes/${id}.html?v=20261021-memory-card-16`;
     frames.set(id, frame); document.getElementById('scenes').append(frame);
